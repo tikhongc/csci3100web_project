@@ -1,1 +1,2 @@
-# csci3100web_project
+# csci3100 Group G1
+QUERY
