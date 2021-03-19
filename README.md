@@ -1,2 +1,2 @@
 # csci3100 Group G1
-QUERY
+CUERY, A question-and-answer website inspired by Quora and Reddit.
