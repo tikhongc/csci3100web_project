@@ -86,36 +86,6 @@ const UserSchema= mongoose.Schema({//mongoose schematypes:https://mongoosejs.com
     }
 }, {timestamps: true});
 
-//hash password before saving userinput and call next when we are done
-//run some codes do sth before user is saved
-UserSchema.pre('save',async function(next){
-   const user = this;
-   //true when user is being updated
-   if(user.isModified('password')){
-       //ensure the sucrity of user 's password
-      user.password = await bcrypt.hash(user.password,8);
-   }
-   next();
-})
 
-//綱要Schemas被mongoose.model()方法“編譯”為模型。擁有模型後，您可以使用它來查找，創建，更新和刪除給定類型的對象。
-//model 用來封裝 schema
-const  UserModel= mongoose.model('User', UserSchema);
-
-// Test :connect to database and postman successfully
-  const newuser = new UserModel({
-     name: 'chiutikhong',
-     email: '120343232@gmail.com  ',
-     password: '12312314',
-     year:3,
-  })
-  //save user
- newuser.save().then(() => {
-      console.log(newuser)
-  }).catch((error) => {
-      console.log('Error!')
-  })
-
-module.exports.UserModel = UserModel;
 
 module.exports.UserSchema = UserSchema;
