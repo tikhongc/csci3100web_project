@@ -62,8 +62,29 @@ const UserSchema= mongoose.Schema({//mongoose schematypes:https://mongoosejs.com
             type:String,
             required:true,
         }
-    }]
-})
+    }],
+    bio: {
+        type: String,
+        required: false,
+        max: 255
+    },
+
+    profileImage: {
+        type: String,
+        required: false,
+        max: 255
+    },
+   
+    resetPasswordToken: {
+        type: String,
+        required: false
+    },
+
+    resetPasswordExpires: {
+        type: Date,
+        required: false
+    }
+}, {timestamps: true});
 
 //hash password before saving userinput and call next when we are done
 //run some codes do sth before user is saved
