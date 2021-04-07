@@ -49,6 +49,10 @@ const PostSchema = mongoose.Schema(
             type: [String],
             default: []
         },
+        votes: {
+            type: Number,
+            default: 0
+        },
         comments: { //may be removed since it its not necessary?
             type: [String],
             default: []
@@ -62,15 +66,21 @@ const PostSchema = mongoose.Schema(
 });
 
 PostSchema.pre('save', async function(next) {
-    //this is the controversial schema, needs reworking!!
+  //this is the controversial schema, needs reworking!!
     const post = this;
     if(post.isModified('upvotes') || post.isModified('downvotes')) {
+        /*  
+        //Calculating controversy points
         if(Math.max(post.upvotes, post.downvotes) !== 0) {
             post.controversy = (Math.min(post.upvotes, post.downvotes) / Math.max(post.upvotes, post.downvotes)) * (user.upvotes + user.downvotes);
         }
         else {
             post.controversy = 0;
         }
+        */
+        
+        //Calculating the total votes
+        post.votes = post.upvotes - post.downvotes;
     }
     next();
 });
