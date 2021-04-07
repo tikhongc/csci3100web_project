@@ -15,19 +15,38 @@
 		button:hover {background-color: #8cf;}
 		button:active {background-color: #88f;}
 		
-		#switch {color: blue; cursor: pointer;}
+		#redirectRegistration {color: blue; cursor: pointer;}
 	</style>
 	<script>
-		// temporary
-		let newUser=false; // false: login, true: register
-		function ChangeAction() {
-			// document.getElementById("form").action= something something
-			document.getElementById("row-email").classList.toggle("d-none",newUser);
-			document.getElementById("row-password2").classList.toggle("d-none",newUser);
-			document.getElementById("submit").innerHTML=newUser?"Login":"Register";
-			document.getElementById("switch").innerHTML=newUser?"New user?":"Existing user?";
-			newUser=!newUser;
-		}
+                var url_string = window.location.href;
+                var url = new URL(url_string);
+                var loginError = "0";
+                loginError = url.searchParams.get("loginError");
+                if (loginError === "1"){
+                    alert("Login Error. (Account does not exist)");
+                    window.location.href = "login.html"; 
+                }
+                else if (loginError === "2"){
+                    alert("Login Error. (Incorrect password)");
+                    window.location.href = "login.html"; 
+                }
+                
+                function redirectRegistration(){
+                    window.location.href = "registration.html";
+                }
+                
+                function clickButton() {
+                    let email = document.getElementById("email");
+                    let password = document.getElementById("password");
+                    if (email.value.length === 0 || password.value.length === 0){
+                        alert("Please fill in all the information.");
+                        return false;
+                    }
+                    else{   
+                       document.getElementById("loginForm").action = "login";
+                       return true;
+                    }
+                }
 	</script>
 </head>
 <body style="background-color: #8cf;">
@@ -36,28 +55,19 @@
 			<div style="max-height: 400px; padding: 5%;">
 				<h1 style="text-align: center;">Cuery</h1>
 				<br/>
-				<form id="form"> <!-- <form id="form" action="something" method="post"> -->
+				<form id="loginForm" onsubmit="return clickButton()" action="" method="POST"> <!-- <form id="form" action="something" method="post"> -->
 					<table>
-						<tr id="row-email" class="d-none">
+						<tr>
 							<td> <label for="email">Email:&nbsp;</label> </td>
 							<td> <input type="email" id="email" name="email"/> </td>
 						</tr>
 						<tr>
-							<td> <label for="username">Username:&nbsp;</label> </td>
-							<td> <input type="text" id="username" name="username"/> </td>
-						</tr>
-						<tr>
 							<td> <label for="password">Password:&nbsp;</label> </td>
 							<td> <input type="password" id="password" name="password"/> </td>
-						</tr>
-						<tr id="row-password2" class="d-none">
-							<td> <label for="password2">Confirm<br/>Password:&nbsp;</label> </td>
-							<td> <input type="password" id="password2"/> </td>
-						</tr>
 					</table>
 					<br/>
-					<button id="submit" type="submit" style="min-width: 25%;">Login</button>
-					<span id="switch" style="margin-left: 1em;" onclick="ChangeAction();">New user?</span>
+					<button id="login" type="submit" style="min-width: 25%;">Login</button>
+					<span id="redirectRegistration" style="margin-left: 1em;" onclick="redirectRegistration();">New user?</span>
 				</form>
 			</div>
 		</div>
