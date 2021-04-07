@@ -51,9 +51,6 @@ router.get('/posts', async (req, res) => {
         case "timeAsc":
             sort = "+createdAt";
             break;
-        case "timeDes":
-            sort = "-createdAt";
-            break;
         case "voteAsc":
             sort = {
                 votes: 1,
@@ -73,8 +70,7 @@ router.get('/posts', async (req, res) => {
             };
             break;
         default:
-            return res.status(400)
-            .send({error: "Invalid sort, use timeAsc, timeDes, voteAsc, voteDes, or contDes instead."});
+            sort = "-createdAt";
     }
 
     //parsing optional queries
