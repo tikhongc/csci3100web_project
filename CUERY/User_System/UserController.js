@@ -88,7 +88,7 @@ else{
         const token = await user.Token();
         console.log("Login Successfully.")
         //res.send(currentUser);
-        res.redirect('/mainPage.html');
+        res.redirect('/main.html');
         //res.send({ user, token });
         //hide the private user data    
     }catch(error){
