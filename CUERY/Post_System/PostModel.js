@@ -1,8 +1,7 @@
-require('../mongodb/mongoose');
 const PostSchema = require("./PostSchema");
+require('../mongodb/mongoose');
 
 //Missing: views
+const PostModel = mongoose.model("Post", PostSchema);
 
-const Post = mongoose.model("Post", PostSchema);
-
-module.exports = Post;
+module.exports = PostModel;

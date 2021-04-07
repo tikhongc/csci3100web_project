@@ -1,6 +1,6 @@
 const CommentSchema = require("./CommentSchema");
 require('../mongodb/mongoose');
 
-const Comment = mongoose.model("Comment", CommentSchema);
+const CommentModel = mongoose.model("Comment", CommentSchema);
 
-module.exports = Comment;
+module.exports = CommentModel;
