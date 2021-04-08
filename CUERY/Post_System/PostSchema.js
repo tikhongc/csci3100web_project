@@ -1,4 +1,18 @@
+const { json } = require("express");
 const mongoose = require("mongoose");
+
+const statusList = ["available", "hidden", "draft"]
+
+const categoryList = ["query", "idea", "activity", "project", "rant"];
+
+const topicList = ["Anthropology", "english studies", "fine arts",
+"history", "language and linguistics", "music", "philosophy",
+"religious studies", "business and finance", "education",
+"engineering", "computer science", "electronic engineering",
+"data science", "biomedical engineering", "laws", "medicine and pharmacy", 
+"nursing", "chinese medicine", "public health", "science", 
+"mathematics", "social science", "economics", "urban studies",
+"psychology", "journalism and communication", "data science"];
 
 const PostSchema = mongoose.Schema(
     {
@@ -20,17 +34,20 @@ const PostSchema = mongoose.Schema(
         },
         category: {
             type: String,
+            lowercase: true,
             required: true,
-            enum: ["query", "idea", "collaboration", "rant"]
+            enum: categoryList
         },
         topic: {
             type: String,
+            lowercase: true,
             required: true,
-            enum: ["science", "social science", "business", "electronics", "others"]
+            enum: topicList
         },
         status: {
             type: String,
-            enum: ["available", "hidden", "draft"],
+            lowercase: true,
+            enum: statusList,
             default: "available"
         },
         upvotes: {
@@ -69,15 +86,13 @@ PostSchema.pre('save', async function(next) {
   //this is the controversial schema, needs reworking!!
     const post = this;
     if(post.isModified('upvotes') || post.isModified('downvotes')) {
-        /*  
         //Calculating controversy points
         if(Math.max(post.upvotes, post.downvotes) !== 0) {
-            post.controversy = (Math.min(post.upvotes, post.downvotes) / Math.max(post.upvotes, post.downvotes)) * (user.upvotes + user.downvotes);
+            post.controversy = (Math.min(post.upvotes, post.downvotes) / Math.max(post.upvotes, post.downvotes)) * (post.upvotes + post.downvotes);
         }
         else {
             post.controversy = 0;
         }
-        */
         
         //Calculating the total votes
         post.votes = post.upvotes - post.downvotes;

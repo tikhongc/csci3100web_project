@@ -19,7 +19,7 @@ const router = new express.Router();
  */
 
 //1. Read a post
-router.get('/posts/:id', authentication,async (req, res) => {
+router.get('/posts/:id', authentication, async (req, res) => {
     try {
         const post = await PostModel.findById(req.params.id);
         if(!post) {
@@ -40,11 +40,10 @@ router.get('/posts/:id', authentication,async (req, res) => {
  * Optional queries:
  * 1. category
  * 2. topic
- * 3. time limit (last day, week, month, or year) (to be implemented)
+ * 3. time limit (last day, week, month, or year)
  */
 router.get('/posts', async (req, res) => {
     //parsing mandatory queries
-    //missing: last 24/week/month/year
     const page = parseInt(req.query.page) - 1;
     const limit = parseInt(req.query.limit);
     switch(req.query.sort) {
@@ -71,25 +70,38 @@ router.get('/posts', async (req, res) => {
             break;
         default:
             sort = "-createdAt";
+            break;
     }
 
     //parsing optional queries
     var filter = {};
     if(req.query.topic) filter.topic = req.query.topic;
     if(req.query.category) filter.category = req.query.category;
-    /* if(req.query.time) {
+    if(req.query.time) {
+        if(!["day", "week", "month", "year"].includes(req.query.time)) {
+            return res.status(400).send({error: "Invalid time range. Please use day, week, month, or year."});
+        }
+
+        const dayLength = 1000 * 60 * 60 * 24;
+        var time;
         switch(req.query.time) {
             case "day":
-                Date.now() - 1000 * 60 * 60 * 24;
+                time = Date.now() - dayLength;
                 break;
             case "week":
-                Date.now() - 1000 * 60 * 60 * 24 * 7;
+                time = Date.now() - dayLength * 7;
+                break;
+            case "month":
+                time = Date.now() - dayLength * 30;
+                break;
+            case "year":
+                time = Date.now() - dayLength * 365;
         }
 
         filter.createdAt = {
             $gt:time
         };
-    } */
+    }
 
     //parsing response
     try {
@@ -144,8 +156,7 @@ router.patch('/posts/:id', authentication, async (req, res) => {
  *       "action": "upvote" (this can be "upvote", "downvote", or "cancel")
  *   }
  */
-router.patch('/posts/vote/:id', async (req, res) => {
-//router.patch('/posts/vote/:id',authentication, async (req, res) => {
+router.patch('/posts/vote/:id',authentication, async (req, res) => {
     const {owner, action} = req.body;
 
     try {
