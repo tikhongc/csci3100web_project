@@ -8,17 +8,18 @@
 	<style>
 		body {line-height: 200%; background-color: #8cf; overflow-x: hidden;}
 		div {height: 100%; margin: 0 auto;} /* margin: 0 auto is for centering */
+		p {display: inline-block; margin: 0.2em;}
 		
 		button {border: 1px solid blue; border-radius: 0.5em; background-color: #def; transition: background 0.2s;}
 		button:hover {background-color: #8cf;}
 		button:active {background-color: #88f;}
 		
 		.avatar {position: absolute; top: 0.5em; right: 0.5em; height: 2.5rem; width: 2.5rem; cursor: pointer; z-index: 1000;}
-		.sidebar {background-color: #fff; position: absolute; top: 0px; right: 0px; min-height: 100vh; white-space: nowrap; z-index: 999; transition: width 1s; width: 0px;}
-		.sidebar-visible {width: 200px;}
+		.sidebar { background-color: #fff; position: absolute; top: 0px; right: 0px; min-height: 100vh; white-space: nowrap; z-index: 999; transition: width 1s; width: 0px;}
+		.sidebar-visible { width: 200px;}
 		
 		#posts {background-color: #cef; padding: 0.2em 0;}
-		#posts>div {background-color: #adf; line-height: 100%; margin: 0.3em 0.5em;}
+		#posts>div {background-color: #adf; line-height: 100%; margin: 0.3em 0.5em; cursor: pointer;}
 	</style>
 </head>
 <body>
@@ -29,8 +30,17 @@
 	</div>
 	<hr style="margin: 0;"/>
 	<div style="padding: 0.5em;">
-		Forum -> subforum -> sort by something
-		[Probably a link to add posts]
+		<div style="margin-bottom: 0.5em;">
+			Forum -> subforum -> sort by <select id="sort">
+				<option value="timeDsc" selected>Time, descending</option>
+				<option value="timeAsc" selected>Time, ascending</option>
+				<option value="voteDsc" selected>Votes, descending</option>
+				<option value="voteAsc" selected>Votes, ascending</option>
+				<option value="contDsc" selected>Controversy, descending</option>
+				<option value="contAsc" selected>Controversy, ascending</option>
+			</select>
+			<button style="float: right;" onclick="window.location='/newpost.html';">Add new post</button>
+		</div>
 		<div id="posts"></div>
 	</div>
 	<div id="sidebar" class="sidebar">
@@ -38,23 +48,26 @@
 		Profile things probably
 	</div>
 	<script>
-		// to test in the console: addPost({title:"foo",author:"bar"});
-		addPost({title:"foo",author:"bar"});addPost({title:"foo",author:"bar"});addPost({title:"foo",author:"bar"});addPost({title:"foo",author:"bar"});
-		addPost({title:"foo",author:"bar"});addPost({title:"foo",author:"bar"});addPost({title:"foo",author:"bar"});addPost({title:"foo",author:"bar"});
-		// delete the above 2 lines later
-		
 		function addPost(data) { // data is an object
 			var post=document.createElement("div");
-			var line=document.createElement("div");
-			line.innerHTML=data.title;
-			post.appendChild(line);
-			line=document.createElement("div");
-			line.classList.add("text-secondary");
-			line.innerHTML=data.author;
-			post.appendChild(line);
+			var p=document.createElement("p");
+			var obj=document.createElement("div");
+			p.innerHTML=data.upvotes-data.downvotes;
+			p.style.fontSize="200%";
+			post.appendChild(p);
+			p=document.createElement("p");
+			obj.innerHTML=data.title;
+			p.appendChild(obj);
+			obj=document.createElement("div");
+			obj.classList.add("text-secondary");
+			obj.innerHTML=data.owner;
+			p.appendChild(obj);
+			post.appendChild(p);
 			document.getElementById("posts").appendChild(post);
 			// can add more information
 		}
+		// test function
+		addPost({title:"foo",owner:"bar",upvotes:123,downvotes:24});
 	
 		// add posts if reaching bottom
 		// DOESN'T work if page isn't long enough
@@ -67,6 +80,10 @@
 				// do something
 			}
 		});
+		
+		fetch("/posts",{method:"GET"})
+		.then(res=>res.json())
+		.then(data=>console.log(data)); // idk, log it first
 	</script>
 </body>
 </html>

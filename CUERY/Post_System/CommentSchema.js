@@ -42,7 +42,21 @@ const CommentSchema = mongoose.Schema({
     downvoteOwners: {
         type: [String],
         default:[]
+    },
+    votes: {
+        type: Number,
+        default: 0
     }
 });
+
+CommentSchema.pre('save', async function(next) {
+    //this is the controversial schema, needs reworking!!
+      const comment = this;
+      if(comment.isModified('upvotes') || comment.isModified('downvotes')) {
+          //Calculating the total votes
+          comment.votes = comment.upvotes - comment.downvotes;
+      }
+      next();
+  });
 
 module.exports = CommentSchema;

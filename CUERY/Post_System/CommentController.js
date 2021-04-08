@@ -5,6 +5,7 @@ const PostModel = require("./PostModel");
 const router = new express.Router();
 require('../mongodb/mongoose');
 const authentication=require('../User_System/method/authentication');
+const { post } = require('../User_System/UserSchema');
 
 //Missing: login authentication
 
@@ -19,7 +20,7 @@ const authentication=require('../User_System/method/authentication');
  */
 
 //1. Retrieve a comment
-router.get('/comments/:id', authentication,async (req, res) => {
+router.get('/comments/:id', authentication, async (req, res) => {
     try {
         const comment = await CommentModel.findById(req.params.id);
         if(!comment) {
@@ -32,7 +33,7 @@ router.get('/comments/:id', authentication,async (req, res) => {
 });
 
 //2. Retrieve all children comments by a parent ID
-router.get('/comments/children/:id',authentication, async (req, res) => {
+router.get('/comments/children/:id', authentication, async (req, res) => {
     try {
         const parentPost = await PostModel.findById(req.params.id);
         if(parentPost) {
@@ -53,7 +54,7 @@ router.get('/comments/children/:id',authentication, async (req, res) => {
 });
 
 //3. Create a comment
-router.post('/comments', authentication,async (req, res) => {
+router.post('/comments', authentication, async (req, res) => {
     const newComment = new CommentModel(req.body);
 
 
@@ -81,7 +82,7 @@ router.post('/comments', authentication,async (req, res) => {
 });
 
 //4. Modify a comment of its content
-router.patch('/comments/:id', authentication,async (req, res) => {
+router.patch('/comments/:id', authentication, async (req, res) => {
     //Validating legitimacy of the update requests
     updates = Object.keys(req.body);
     allowedUpdates = ["content"];
@@ -108,14 +109,14 @@ router.patch('/comments/:id', authentication,async (req, res) => {
  *   An example vote object:
  *   {
  *       "owner": "username",
- *       "action": "upvote" (this can be "upvote", "doownvote", or "cancel")
+ *       "action": "upvote" (this can be "upvote", "downvote", or "cancel")
  *   }
  */
- router.patch('/comments/vote/:id',authentication, async (req, res) => {
+ router.patch('/comments/vote/:id', authentication, async (req, res) => {
     const {owner, action} = req.body;
 
     try {
-        //checking if the post exists
+        //checking if the comment exists
         const comment = await CommentModel.findById(req.params.id);
         if(!comment) {
             return res.status(404).send();
@@ -127,7 +128,9 @@ router.patch('/comments/:id', authentication,async (req, res) => {
                 const isUpvote = comment.upvoteOwners.includes(owner);
                 if(isUpvote) {
                     try {
-                        await comment.update({ $pull: { upvoteOwners: owner }, $inc: { upvotes: -1 }});
+                        comment.upvoteOwners.splice(comment.upvoteOwners.indexOf(owner), 1);
+                        comment.upvotes -= 1;
+                        await comment.save();
                         return res.send(req.body);
                     } catch(error) {
                         return res.status(500).send();
@@ -135,7 +138,9 @@ router.patch('/comments/:id', authentication,async (req, res) => {
                 }
                 else {
                     try {
-                        await comment.update({ $pull: { downvoteOwners: owner }, $inc: { downvotes: -1 }});
+                        comment.downvoteOwners.splice(comment.upvoteOwners.indexOf(owner), 1);
+                        comment.downvotes -= 1;
+                        await comment.save();
                         return res.send(req.body);
                     } catch(error) {
                         return res.status(500).send();
@@ -157,7 +162,9 @@ router.patch('/comments/:id', authentication,async (req, res) => {
                 //handling an upvote
                 if(action === "upvote") {
                     try {
-                        await comment.update({ $addToSet: { upvoteOwners: owner }, $inc: { upvotes: 1 } });
+                        comment.upvoteOwners.push(owner);
+                        comment.upvotes += 1;
+                        await comment.save();
                         return res.send(req.body);
                     } catch(error) {
                         return res.status(500).send(error);
@@ -166,7 +173,9 @@ router.patch('/comments/:id', authentication,async (req, res) => {
                 //handling a downvote
                 else {
                     try{
-                        await comment.update({ $addToSet: { downvoteOwners: owner }, $inc: { downvotes: 1 } });
+                        comment.downvoteOwners.push(owner);
+                        comment.downvotes += 1;
+                        await comment.save();
                         return res.send(req.body);
                     } catch(error) {
                         return res.status(500).send(error);
@@ -181,7 +190,7 @@ router.patch('/comments/:id', authentication,async (req, res) => {
 });
 
 //6. Delete a comment
-router.delete('/comments/:id',authentication, async (req, res) => {
+router.delete('/comments/:id', authentication, async (req, res) => {
     try {
         const comment = await CommentModel.findById(req.params.id);
         if(!comment) {

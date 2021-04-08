@@ -12,7 +12,7 @@ const port = process.env.PORT || 3000;// nodemon server.js
 
 
 app.use(bodyParser.urlencoded({extended: false}));
-app.use(express.static('./QUERY/public'));
+app.use(express.static('./CUERY/public'));
 app.use(express.json())
 //registe router
 app.use(UserRouter);

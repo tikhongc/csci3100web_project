@@ -1,6 +1,7 @@
 require('../mongodb/mongoose');
 const authentication=require('../User_System/method/authentication');
 const express = require('express');
+const {statusList, categoryList, topicList} = require("./PostSchema");
 const PostModel = require("./PostModel");
 const CommentModel = require("./CommentModel");
 const router = new express.Router();
@@ -19,7 +20,7 @@ const router = new express.Router();
  */
 
 //1. Read a post
-router.get('/posts/:id', authentication,async (req, res) => {
+router.get('/posts/:id', authentication, async (req, res) => {
     try {
         const post = await PostModel.findById(req.params.id);
         if(!post) {
@@ -31,49 +32,81 @@ router.get('/posts/:id', authentication,async (req, res) => {
     }
 });
 
-//2. Retrieve a number of posts before a timestamp with an optional filter
-router.get('/posts/before/:createdAt/limit/:limit/sort/:sort', async (req, res) => {
-    const filters = Object.keys(req.body);
-    const allowedFilters = ["category", "topic"];
-    const isValidOperation = filters.every((filter) => allowedFilters.includes(filter));
-    
-    if(!isValidOperation) {
-        return res.status(400).send({ error: "Invalid filters." });
-    }
-
-    if(!["timeAsc", "timeDes", "upvoDes", "downDes", "contDes"].includes(req.sort)) {
-        return res.status(400).send({ error: "Invalid sort." });
-    }
-
-    var sort;
-
-    switch(req.sort) {
+//2. Retrieve a number of posts
+/**
+ * Mandatory queries:
+ * 1. page
+ * 2. limit
+ * 3. sort
+ * Optional queries:
+ * 1. category
+ * 2. topic
+ * 3. time limit (last day, week, month, or year)
+ */
+router.get('/posts', async (req, res) => {
+    //parsing mandatory queries
+    const page = parseInt(req.query.page) - 1;
+    const limit = parseInt(req.query.limit);
+    switch(req.query.sort) {
         case "timeAsc":
             sort = "+createdAt";
             break;
-        case "timeDes":
-            sort = "-createdAt";
+        case "voteAsc":
+            sort = {
+                votes: 1,
+                createdAt: -1
+            };
             break;
-        case "upvoDes":
-            sort = "+upvotes";
-            break;
-        case "downDes":
-            sort = "-upvotes";
+        case "voteDes":
+            sort = {
+                votes: -1,
+                createdAt: -1
+            };
             break;
         case "contDsc":
-            sort = "-controversy";
+            sort = {
+                controversy: -1,
+                createdAt: -1
+            };
+            break;
+        default:
+            sort = "-createdAt";
             break;
     }
 
+    //parsing optional queries
+    var filter = {};
+    if(req.query.topic) filter.topic = req.query.topic;
+    if(req.query.category) filter.category = req.query.category;
+    if(req.query.time) {
+        if(!["day", "week", "month", "year"].includes(req.query.time)) {
+            return res.status(400).send({error: "Invalid time range. Please use day, week, month, or year."});
+        }
+
+        const dayLength = 1000 * 60 * 60 * 24;
+        var time;
+        switch(req.query.time) {
+            case "day":
+                time = Date.now() - dayLength;
+                break;
+            case "week":
+                time = Date.now() - dayLength * 7;
+                break;
+            case "month":
+                time = Date.now() - dayLength * 30;
+                break;
+            case "year":
+                time = Date.now() - dayLength * 365;
+        }
+
+        filter.createdAt = {
+            $gt:time
+        };
+    }
+
+    //parsing response
     try {
-        const posts = await PostModel.find({
-            $and: [
-                req.body,
-                {
-                    createdAt: { $lt: req.params.createdAt }
-                }
-            ]
-        }).limit(parseInt(req.params.limit)).sort(sort);
+        const posts = await PostModel.find(filter).sort(sort).skip(page * limit).limit(limit);
 
         res.send(posts);
     }
@@ -83,7 +116,7 @@ router.get('/posts/before/:createdAt/limit/:limit/sort/:sort', async (req, res) 
 });
 
 //2. Create a post
-router.post('/posts',authentication,async (req, res) => {
+router.post('/posts', authentication, async (req, res) => {
     const newPost = new PostModel(req.body);
     try {
         await newPost.save();
@@ -94,7 +127,7 @@ router.post('/posts',authentication,async (req, res) => {
 });
 
 //3. Modify a post of its title, content, category, topic, and status
-router.patch('/posts/:id',authentication,async (req, res) => {
+router.patch('/posts/:id', authentication, async (req, res) => {
     //Validating legitimacy of the update request
     updates = Object.keys(req.body);
     allowedUpdates = ["title", "content", "category", "topic", "status"];
@@ -121,7 +154,7 @@ router.patch('/posts/:id',authentication,async (req, res) => {
  *   An example vote object:
  *   {
  *       "owner": "username",
- *       "action": "upvote" (this can be "upvote", "doownvote", or "cancel")
+ *       "action": "upvote" (this can be "upvote", "downvote", or "cancel")
  *   }
  */
 router.patch('/posts/vote/:id',authentication, async (req, res) => {
@@ -140,7 +173,6 @@ router.patch('/posts/vote/:id',authentication, async (req, res) => {
                 const isUpvote = post.upvoteOwners.includes(owner);
                 if(isUpvote) {
                     try {
-                        //await post.update({ $pull: { upvoteOwners: owner }, $inc: { upvotes: -1 }});
                         post.upvoteOwners.splice(post.upvoteOwners.indexOf(owner), 1);
                         post.upvotes -= 1;
                         await post.save();
@@ -178,8 +210,6 @@ router.patch('/posts/vote/:id',authentication, async (req, res) => {
                         post.upvoteOwners.push(owner);
                         post.upvotes += 1;
                         await post.save();
-
-                        //await post.update({ $addToSet: { upvoteOwners: owner }, $inc: { upvotes: 1 } });
                         return res.send(req.body);
                     } catch(error) {
                         return res.status(500).send(error);
@@ -191,8 +221,6 @@ router.patch('/posts/vote/:id',authentication, async (req, res) => {
                         post.downvoteOwners.push(owner);
                         post.downvotes += 1;
                         await post.save();
-
-                        //await post.update({ $addToSet: { downvoteOwners: owner }, $inc: { downvotes: 1 } });
                         return res.send(req.body);
                     } catch(error) {
                         return res.status(500).send(error);
@@ -207,7 +235,7 @@ router.patch('/posts/vote/:id',authentication, async (req, res) => {
 });
 
 //5. Delete a post
-router.delete('/posts/:id',authentication, async (req, res) => {
+router.delete('/posts/:id', authentication, async (req, res) => {
     try {
         const post = await PostModel.findByIdAndDelete(req.params.id);
         if(!post) {
@@ -218,6 +246,24 @@ router.delete('/posts/:id',authentication, async (req, res) => {
     } catch(error) {
         res.status(500).send(error);
     }
+});
+
+//get lists
+router.get('/lists/:list', async (req, res) => {
+
+    if(!["status", "category", "topic"].includes(req.params.list)) {
+        return res.status(400).send({error: "Please use status, category, and topic."});
+    }
+    switch(req.params.list) {
+        case "status":
+            return res.send(statusList);
+        case "category":
+            return res.send(categoryList);
+        case "topic":
+            return res.send(topicList);
+    }
+    res.status(500).send();
+
 });
 
 module.exports = router;
