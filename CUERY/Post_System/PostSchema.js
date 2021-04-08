@@ -1,11 +1,11 @@
-const { json } = require("express");
+
 const mongoose = require("mongoose");
 
 const statusList = ["available", "hidden", "draft"]
 
 const categoryList = ["query", "idea", "activity", "project", "rant"];
 
-const topicList = ["Anthropology", "english studies", "fine arts",
+const topicList = ["anthropology", "english studies", "fine arts",
 "history", "language and linguistics", "music", "philosophy",
 "religious studies", "business and finance", "education",
 "engineering", "computer science", "electronic engineering",
@@ -100,4 +100,9 @@ PostSchema.pre('save', async function(next) {
     next();
 });
 
-module.exports = PostSchema;
+module.exports = {
+    statusList: statusList,
+    categoryList: categoryList,
+    topicList: topicList,
+    PostSchema: PostSchema
+}

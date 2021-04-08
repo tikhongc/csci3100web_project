@@ -1,6 +1,7 @@
 require('../mongodb/mongoose');
 const authentication=require('../User_System/method/authentication');
 const express = require('express');
+const {statusList, categoryList, topicList} = require("./PostSchema");
 const PostModel = require("./PostModel");
 const CommentModel = require("./CommentModel");
 const router = new express.Router();
@@ -245,6 +246,24 @@ router.delete('/posts/:id', authentication, async (req, res) => {
     } catch(error) {
         res.status(500).send(error);
     }
+});
+
+//get lists
+router.get('/lists/:list', async (req, res) => {
+
+    if(!["status", "category", "topic"].includes(req.params.list)) {
+        return res.status(400).send({error: "Please use status, category, and topic."});
+    }
+    switch(req.params.list) {
+        case "status":
+            return res.send(statusList);
+        case "category":
+            return res.send(categoryList);
+        case "topic":
+            return res.send(topicList);
+    }
+    res.status(500).send();
+
 });
 
 module.exports = router;

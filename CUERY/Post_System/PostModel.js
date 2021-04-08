@@ -1,4 +1,4 @@
-const PostSchema = require("./PostSchema");
+const {PostSchema} = require("./PostSchema");
 require('../mongodb/mongoose');
 
 //Missing: views
