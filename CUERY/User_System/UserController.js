@@ -1,45 +1,24 @@
-//a Router API file
 //file to store and manipulate user data and output a router
 
 require('../mongodb/mongoose');
 const express = require('express');
-
-const bcrypt = require('bcryptjs');//https://www.npmjs.com/package/bcrypt
-const crypto = require('crypto-js');//https://www.npmjs.com/package/crypto-js
-
+const bcrypt = require('bcryptjs');
 const UserModel = require('./UserModel');
-
-//const multer = require('multer');
-//const sharp = require('sharp');
-//const {check} = require('express-validator');
-
-const {WelcomeEmail, RecoveryEmail} = require('../User_System/method/email');
+const {WelcomeEmail, RecoveryEmail,ConfirmationEmail} = require('../User_System/method/email');
 const authentication=require('../User_System/method/authentication');
+const User = new express.Router();     
 
-
-const User = new express.Router();     //creating a new router
-
-//const {update} = require('./UserModel');
-
-//POST：提交資料，新增一筆新的資料（如果存在會新增一筆新的）
-//PUT：更新一筆資料，如果存在這筆資就會覆蓋過去
-//PATCH：部分更新資料
-//DELETE：刪除資料
+// function to check unique email also
+function validateEmail(email) {
+    const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+  }
 
 //User log system:
 //1.User Signup
 //2.Uer Login  
 //3.Uer Logout 
 //4.User Recovery (server side)
-
-
-//post usermodel on body
-//Handle requests to submit data from the creation form
-// need to check unique email also
-function validateEmail(email) {
-    const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(email);
-  }
   
  User.post('/user_create', async(req, res)=> {
     const newUser = new UserModel({
@@ -49,6 +28,7 @@ function validateEmail(email) {
         year: req.body.year,
     });
     if (!validateEmail(req.body.newEmail))
+          //res.send('error');
         res.redirect('/registration.html?invalid=2');
 else{
     try{
@@ -65,7 +45,8 @@ else{
 }
 })
 
- //for user to log in //need a login page
+
+ //for user to log in 
  User.post('/login',async(req,res)=>{
     try{
          //compare user email and password in database and stored as const      
@@ -88,9 +69,8 @@ else{
         const token = await user.Token();
         console.log("Login Successfully.")
         //res.send(currentUser);
-        res.redirect('/mainPage.html');
-        //res.send({ user, token });
-        //hide the private user data    
+        //res.redirect('/main.html');
+        res.send({ user, token });  
     }catch(error){
        res.status(400);//bad request
        res.send(error);
@@ -98,6 +78,7 @@ else{
 
 })
 
+//logout
 User.post('/logout',authentication,async(req,res)=>{
    try{
      //remove token  when log out 
@@ -110,14 +91,86 @@ User.post('/logout',authentication,async(req,res)=>{
    }
 })
 
- 
- //User management:(server side)
 
- //1.fetch all user inforation
+//User recovery
+const { check  } = require('express-validator');
+const validator = require('./method/validator');
+
+//forgot password request
+User.post("/forgot", [
+    check('email').isEmail().withMessage('Enter a valid email address'),
+    check('email').not().isEmpty(),
+  ],validator,
+  async (req, res) => {
+    try{
+        const {email} = req.body;
+        const user = await UserModel.findOne({ email : email });
+
+        if (!user) {
+            //account dose not exist!
+            return res.status(401).json({message: 'The email address ' + email + 
+            ' is not associated with any account. Double-check your email address and try again.'});
+         } 
+
+       await user.ResetPassword();
+       let link = "http://" + req.headers.host + "/api/recovery/reset/" + user.resetPasswordToken;
+       console.log(user.resetPasswordToken);
+       RecoveryEmail(user.email,user.name,link);
+       res.status(200).send('Account activation email has been sent,please check your mailbox.');
+    }
+    catch(error){
+        res.status(500).json({message: error.message});
+    }
+});
+
+//get passwordReset
+User.get('/reset/:token',async (req, res) => {
+    try{
+        const user = await UserModel.findOne({resetPasswordToken: req.params.token, resetPasswordExpires: {$gt: Date.now()}});
+        if (!user) {
+            return res.status(401).json({message: 'Password reset token is invalid or has expired.'});
+         } 
+            res.send(user);
+    }
+    catch(error){
+        res.status(400).send(error);
+    }
+})
+
+//Reset password
+User.post('/reset/:token',[
+    check('password').not().isEmpty().isLength({min: 8}).withMessage('Must be at least 8 chars long'),
+    check('confirmPassword', 'Passwords do not match').custom((value, {req}) => (value === req.body.password)),
+  ],validator,
+  async (req, res) => {
+    try{
+        const user = await UserModel.findOne({resetPasswordToken: req.params.token, resetPasswordExpires: {$gt: Date.now()}});
+        if (!user) {
+            return res.status(401).json({message: 'Password reset token is invalid or has expired.'});
+         } 
+         //Set the new password
+         user.password = req.body.password;         
+         user.resetPasswordToken = undefined;
+         user.resetPasswordExpires = undefined;
+
+         await user.save();
+         ConfirmationEmail(user.email,user.name);
+         res.status(200).json({message: 'Your password has been updated.'});
+    }
+    catch(error){
+        res.status(500).json({message: error.message});
+    }
+})
+
+ 
+ //User API :
+
+ //1.fetch user own profile
  //2.fetch user information by searching _id
  //3.update user information by searching _id
  //4.delete user information by searching _id
- //5.get user authentication information
+ //5.fetch all the posts creating by a user
+ //6.fetch all the posts creating by a user
 
 //for user to get own profile
 User.get('/profile', authentication, async (req, res) => {
@@ -125,13 +178,59 @@ User.get('/profile', authentication, async (req, res) => {
 })
 
 
-//When a client needs to replace an existing Resource entirely, they can use PUT. 
-//When they're doing a partial update, they can use HTTP PATCH.
+ //fetch a user by id
+ User.get('/search/:id',(req,res)=>{
+    const object_id = req.params.id;
+    UserModel.findById(object_id).then((user)=>{
+       if(!user){
+           res.status(404)
+           return res.send('404 NOT FOUND');
+       }
+       res.status(200).send(user);
+   }).catch((error)=>{
+      res.status(500);//bad request
+      res.send(error);
+   })
+})
+
+//fetch all posts creating by a user
+User.get('/user/posts/:id' , async(req,res)=>{
+    const object_id = req.params.id;
+    try {
+        const user = await UserModel.findById(object_id)
+        if (!user) {
+            res.status(404)
+            return res.send('404 NOT FOUND'); 
+        }
+        await user.populate('Post').execPopulate();
+        res.status(200).send(user.Post);
+        
+    } catch (e) {
+        res.status(500).send();
+    }
+})
+
+//fetch all  comments creating by a user
+User.get('/user/comments/:id' , async(req,res)=>{
+    const object_id = req.params.id;
+    try {
+        const user = await UserModel.findById(object_id)
+        if (!user) {
+            res.status(404)
+            return res.send('404 NOT FOUND'); 
+        }
+        await user.populate('Comment').execPopulate();
+        res.status(200).send(user.Comment);
+    } catch (e) {
+        res.status(500).send();
+    }
+})
+
 //update user by id
 User.patch('/update',authentication,async(req,res)=>{
     //only allow to update the atrribute included in user model
     const up = Object.keys(req.body);
-    const allowupdate=['name','password','year','email','bio'];//and 
+    const allowupdate=['name','password','year','email','bio','pre',''];//and 
     const valid = up.every((update)=>{
         return allowupdate.includes(update);
      })    
@@ -145,7 +244,6 @@ User.patch('/update',authentication,async(req,res)=>{
         up.forEach((update)=>{
          req.user[update]=req.body[update];
         })
-        //ensure middleware run correctly 
         await req.user.save();
         res.status(200);
         res.send(req.user);
@@ -168,20 +266,6 @@ User.get('/users/all',(req,res)=>{
     })
 })
 
- //fetch a user by id
- User.get('/search/:id',(req,res)=>{
-    const object_id = req.params.id;
-    UserModel.findById(object_id).then((user)=>{
-       if(!user){
-           res.status(404)
-           return res.send('404 NOT FOUND');
-       }
-       res.status(200).send(user);
-   }).catch((error)=>{
-      res.status(500);//bad request
-      res.send(error);
-   })
-})
 
 //delete user by id
 User.delete('/delete/:id',async(req,res)=>{
@@ -199,62 +283,37 @@ User.delete('/delete/:id',async(req,res)=>{
 
 })
 
+module.exports = User;
+
 //reference: 
 //https://medium.com/mesan-digital/tutorial-3b-how-to-add-password-reset-to-your-node-js-authentication-api-using-sendgrid-ada54c8c0d1f
 //https://stackoverflow.com/questions/42682923/password-reset-in-nodejs
 
-//Reset password:
-
-  
-
-
-
-//Password RESET
-// User.post('/recover', [
-//     check('email').isEmail().withMessage('Enter a valid email address'),
-// ], validate, Password.recover);
-
-// User.get('/reset/:token', Password.reset);
-
-// User.post('/reset/:token', [
-//     check('password').not().isEmpty().isLength({min: 6}).withMessage('Must be at least 6 chars long'),
-//     check('confirmPassword', 'Passwords do not match').custom((value, {req}) => (value === req.body.password)),
-// ], validate, Password.resetPassword);
-
-
-
-// //user recovery
-// var nodemailer = require('nodemailer');
-
-// var transporter = nodemailer.createTransport({
-//     service: 'gmail',
-//     auth: {
-//         user: 'youremail@gmail.com',
-//         pass: 'yourpassword'
-//     }
-// });
-
-// User.get('/recover/:id', (req, res) => {
-//     const user_id = req.params.id;
-//     const send_email = usermodel.findOne({id: user_id}).email;
-//     var recovery_key = 12341; //should be random
-//     var mailOptions = {
-//     from: 'youremail@gmail.com',
-//     to: send_email,
-//     subject: 'Test email using nodejs',
-//     text: recovery_key
-//     };
-//     transporter.sendMail(mailOptions, function(error, info){
-//        if (error){
-//            console.log(error);
-//        } 
-//        else{
-//            console.log('Email sent: '+ info.response);
-//        }
-//     });
-// });
-
-
- module.exports = User;
  
 
+//  const emailValidator = require('deep-email-validator');
+ 
+//  async function isEmailValid(email) {
+//   return emailValidator.validate(email)
+//  }
+
+
+// router.post('/register', async function(req, res, next) {
+//   const {email, password} = req.body;
+ 
+//   if (!email || !password){
+//     return res.status(400).send({
+//       message: "Email or password missing."
+//     })
+//   }
+ 
+//   const {valid, reason, validators} = await isEmailValid(email);
+ 
+//   if (valid) return res.send({message: "OK"});
+ 
+//   return res.status(400).send({
+//     message: "Please provide a valid email address.",
+//     reason: validators[reason].reason
+//   })
+ 
+// });
