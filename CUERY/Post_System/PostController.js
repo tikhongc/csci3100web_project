@@ -117,8 +117,10 @@ router.get('/posts', async (req, res) => {
 
 //2. Create a post
 router.post('/posts', authentication, async (req, res) => {
-    const newPost = new PostModel(req.body);
-    try {
+const newPost = new PostModel({
+        ...req.body,
+        owner: req.user._id,
+    });    try {
         await newPost.save();
         res.status(201).send(newPost);
     } catch(error) {
