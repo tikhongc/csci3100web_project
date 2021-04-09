@@ -37,13 +37,7 @@
 				<option value="collaboration">Collaboration</option>
 				<option value="rant">Rant</option>
 			</select><br/>
-			<label for="topic">Topic: </label><select id="topic" name="topic">
-				<option value="science">Science</option>
-				<option value="social science">Social Science</option>
-				<option value="business">Business</option>
-				<option value="electronics">Electronics</option>
-				<option value="others">Others</option>
-			</select><br/>
+			<label for="topic">Topic: </label><select id="topic" name="topic"></select><br/>
 			<label for="content">New post to [forum]:</label><br/>
 			<textarea id="content"></textarea>
 			<div style="text-align: right;">
@@ -56,6 +50,24 @@
 		Profile things probably
 	</div>
 	<script>
+		function toTitleCase(str) {
+			var arr=str.split(" "),i=0;
+			for(word of arr)arr[i++]=word[0].toUpperCase()+word.slice(1,word.length);
+			return arr.join(" ");
+		}
+	
+		fetch("/lists/topic",{method:"GET"})
+		.then(res=>res.json())
+		.then(data=>{
+			var option,select=document.getElementById("topic");
+			for(topic of data){
+				option=document.createElementById("option");
+				option.value=topic;
+				option.innerHTML=toTitleCase(topic);
+				select.appendChild(option);
+			}
+		});
+	
 		document.getElementById("content").addEventListener("submit",function(e){
 			e.preventDefault();
 			// do some checking
