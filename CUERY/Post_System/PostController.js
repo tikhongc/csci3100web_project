@@ -250,20 +250,16 @@ router.delete('/posts/:id', authentication, async (req, res) => {
 
 //get lists
 router.get('/lists/:list', async (req, res) => {
-
-    if(!["status", "category", "topic"].includes(req.params.list)) {
-        return res.status(400).send({error: "Please use status, category, and topic."});
-    }
     switch(req.params.list) {
         case "status":
-            return res.send(statusList);
+            return res.status(500).send(statusList);
         case "category":
-            return res.send(categoryList);
+            return res.status(500).send(categoryList);
         case "topic":
-            return res.send(topicList);
+            return res.status(500).send(topicList);
+        default:
+            return res.status(400).send({error: "Please use status, category, and topic."});
     }
-    res.status(500).send();
-
 });
 
 module.exports = router;
