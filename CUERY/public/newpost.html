@@ -61,7 +61,7 @@
 		.then(data=>{
 			var option,select=document.getElementById("topic");
 			for(topic of data){
-				option=document.createElementById("option");
+				option=document.createElement("option");
 				option.value=topic;
 				option.innerHTML=toTitleCase(topic);
 				select.appendChild(option);
