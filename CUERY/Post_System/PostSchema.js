@@ -4,7 +4,6 @@ const mongoose = require("mongoose");
 const statusList = ["available", "hidden", "draft"]
 
 const categoryList = ["query", "idea", "activity", "project", "rant"];
-const User = require("../User_System/UserModel");
 
 const topicList = ["anthropology", "english studies", "fine arts",
 "history", "language and linguistics", "music", "philosophy",
@@ -17,10 +16,9 @@ const topicList = ["anthropology", "english studies", "fine arts",
 
 const PostSchema = mongoose.Schema(
     {
-         owner: {
-            type: mongoose.Schema.Types.ObjectId,
-            required: true,
-            ref: 'User'
+        owner:{
+            type: String,
+            required: true
         },
         title: {
             type: String,

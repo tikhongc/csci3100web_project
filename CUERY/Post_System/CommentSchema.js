@@ -1,11 +1,9 @@
 const mongoose = require("mongoose");
-const User = require("../User_System/UserModel");
 
 const CommentSchema = mongoose.Schema({
-    owner: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: 'User'
+    owner:{
+        type: String,
+        required: true
     },
     parentPost:{
         type: String,

@@ -117,10 +117,8 @@ router.get('/posts', async (req, res) => {
 
 //2. Create a post
 router.post('/posts', authentication, async (req, res) => {
-const newPost = new PostModel({
-        ...req.body,
-        owner: req.user._id,
-    });    try {
+    const newPost = new PostModel(req.body);
+    try {
         await newPost.save();
         res.status(201).send(newPost);
     } catch(error) {
@@ -252,10 +250,6 @@ router.delete('/posts/:id', authentication, async (req, res) => {
 
 //get lists
 router.get('/lists/:list', async (req, res) => {
-
-    if(!["status", "category", "topic"].includes(req.params.list)) {
-        return res.status(400).send({error: "Please use status, category, and topic."});
-    }
     switch(req.params.list) {
         case "status":
             return res.send(statusList);
@@ -263,9 +257,10 @@ router.get('/lists/:list', async (req, res) => {
             return res.send(categoryList);
         case "topic":
             return res.send(topicList);
+        default:
+            return res.status(400).send({error: "Please use status, category, and topic."});
     }
     res.status(500).send();
-
 });
 
 module.exports = router;

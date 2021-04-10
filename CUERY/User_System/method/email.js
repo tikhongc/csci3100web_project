@@ -26,14 +26,12 @@ const WelcomeEmail = (email, name) => {
       })
 }
 
-const RecoveryEmail = (email,name,link) => {
+const RecoveryEmail = (email, name) => {
     Mail.send({
         to: email,
         from: '1205542199@qq.com',
-        subject: 'Account Activation Link',
-        text:`Hi ${name}!\n 
-        Please click on the following link ${link} to reset your password. \n
-        If you did not request this, please ignore this email and your password will remain unchanged.\n`,
+        subject: 'Please reset your password',
+        text: ` `
     }).then(() => {
         console.log('RecoveryEmail sent')
       })
@@ -42,25 +40,10 @@ const RecoveryEmail = (email,name,link) => {
       })
 }
 
-const ConfirmationEmail = (email,name) => {
-  Mail.send({
-      to: email,
-      from: '1205542199@qq.com',
-      subject: "Your password has been changed",
-      text: `Hi ${name} \n 
-      This is a confirmation that the password for your account ${email} has just been changed.\n`
-  }).then(() => {
-      console.log('ConfirmationEmail sent')
-    })
-    .catch((error) => {
-      console.error(error)
-    })
-}
 
 module.exports = {
     WelcomeEmail,
-    RecoveryEmail,
-    ConfirmationEmail,
+    RecoveryEmail
 }
 
 
