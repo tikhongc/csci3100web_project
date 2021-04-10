@@ -31,12 +31,7 @@
 	<div style="padding: 0.5em;">
 		<form id="newpost" style="padding: 0 0.5em">
 			<label for="title">Title: </label><input type="text" id="title" name="title" placeholder="A suitable title"></input><br/>
-			<label for="category">Category: </label><select id="category" name="category">
-				<option value="query">Query</option>
-				<option value="idea">Idea</option>
-				<option value="collaboration">Collaboration</option>
-				<option value="rant">Rant</option>
-			</select><br/>
+			<label for="category">Category: </label><select id="category" name="category"></select><br/>
 			<label for="topic">Topic: </label><select id="topic" name="topic"></select><br/>
 			<label for="content">New post to [forum]:</label><br/>
 			<textarea id="content"></textarea>
@@ -56,6 +51,7 @@
 			return arr.join(" ");
 		}
 	
+		// fetch topics
 		fetch("/lists/topic",{method:"GET"})
 		.then(res=>res.json())
 		.then(data=>{
@@ -64,6 +60,18 @@
 				option=document.createElement("option");
 				option.value=topic;
 				option.innerHTML=toTitleCase(topic);
+				select.appendChild(option);
+			}
+		});
+		// fetch categories
+		fetch("/lists/category",{method:"GET"})
+		.then(res=>res.json())
+		.then(data=>{
+			var option,select=document.getElementById("category");
+			for(const category of data){
+				option=document.createElement("option");
+				option.value=category;
+				option.innerHTML=toTitleCase(category);
 				select.appendChild(option);
 			}
 		});
