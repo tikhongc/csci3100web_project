@@ -113,7 +113,7 @@ User.post("/forgot", [
          } 
 
        await user.ResetPassword();
-       let link = "http://" + "localhost:3000" + "/api/recovery/reset/" + user.resetPasswordToken;
+       let link = "http://" + req.headers.host + "/api/recovery/reset/" + user.resetPasswordToken;
        console.log(user.resetPasswordToken);
        RecoveryEmail(user.email,user.name,link);
        res.status(200).send('Account activation email has been sent,please check your mailbox.');
