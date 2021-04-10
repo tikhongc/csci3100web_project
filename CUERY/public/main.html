@@ -9,6 +9,7 @@
 		body {line-height: 200%; background-color: #8cf; overflow-x: hidden;}
 		div {height: 100%; margin: 0 auto;} /* margin: 0 auto is for centering */
 		p {display: inline-block; margin: 0.2em;}
+		a,input,select {line-height: 100%; margin-left: 0.5em;}
 		
 		button {border: 1px solid blue; border-radius: 0.5em; background-color: #def; transition: background 0.2s;}
 		button:hover {background-color: #8cf;}
@@ -31,23 +32,55 @@
 	<hr style="margin: 0;"/>
 	<div style="padding: 0.5em;">
 		<div style="margin-bottom: 0.5em;">
-			Forum -> subforum -> sort by <select id="sort">
+			<label for="category">Category: </label><select id="category" onchange="ReloadPosts();">
+				<option value="">All</option>
+			</select>,
+			<label for="topic">Topic: </label><select id="topic" onchange="ReloadPosts();">
+				<option value="">All</option>
+			</select>,
+			<label for="sort">Sort by: </label><select id="sort" onchange="ReloadPosts();">
 				<option value="timeDsc" selected>Time, descending</option>
-				<option value="timeAsc" selected>Time, ascending</option>
-				<option value="voteDsc" selected>Votes, descending</option>
-				<option value="voteAsc" selected>Votes, ascending</option>
-				<option value="contDsc" selected>Controversy, descending</option>
-				<option value="contAsc" selected>Controversy, ascending</option>
+				<option value="timeAsc">Time, ascending</option>
+				<option value="voteDsc">Votes, descending</option>
+				<option value="voteAsc">Votes, ascending</option>
+				<option value="contDsc">Controversy, descending</option>
+				<option value="contAsc">Controversy, ascending</option>
 			</select>
 			<button style="float: right;" onclick="window.location='/newpost.html';">Add new post</button>
 		</div>
 		<div id="posts"></div>
+		<div style="text-align: center;">Page<span id="pages">1</span></div>
 	</div>
 	<div id="sidebar" class="sidebar">
 		Something here<br/>
 		Profile things probably
 	</div>
 	<script>
+		// fetch topics
+		fetch("/lists/topic",{method:"GET"})
+		.then(res=>res.json())
+		.then(data=>{
+			var option,select=document.getElementById("topic");
+			for(const topic of data){
+				option=document.createElement("option");
+				option.value=topic;
+				option.innerHTML=toTitleCase(topic);
+				select.appendChild(option);
+			}
+		});
+		// fetch categories
+		fetch("/lists/category",{method:"GET"})
+		.then(res=>res.json())
+		.then(data=>{
+			var option,select=document.getElementById("category");
+			for(const category of data){
+				option=document.createElement("option");
+				option.value=category;
+				option.innerHTML=toTitleCase(category);
+				select.appendChild(option);
+			}
+		});
+		
 		function addPost(data) { // data is an object
 			var post=document.createElement("div");
 			var p=document.createElement("p");
@@ -67,23 +100,46 @@
 			// can add more information
 		}
 		// test function
-		addPost({title:"foo",owner:"bar",upvotes:123,downvotes:24});
-	
-		// add posts if reaching bottom
-		// DOESN'T work if page isn't long enough
-		// Can shift to manual page-changing if it turns out to be a poor feature
-		window.addEventListener("scroll",function(e){
-			const scroll = (window.scrollY/(document.body.clientHeight-window.innerHeight));
-			console.log(scroll);
-			if(scroll>0.9){ // threshold: 90% scroll
-				console.log("threshold-reached");
-				// do something
-			}
-		});
+		// addPost({title:"foo",owner:"bar",upvotes:123,downvotes:24});
 		
-		fetch("/posts",{method:"GET"})
-		.then(res=>res.json())
-		.then(data=>console.log(data)); // idk, log it first
+		/*
+			// add posts if scroll reaches bottom
+			window.addEventListener("scroll",function(e){
+				const scroll = (window.scrollY/(document.body.clientHeight-window.innerHeight));
+				console.log(scroll);
+				if(scroll>0.9){ // threshold: 90% scroll
+					console.log("threshold-reached");
+					// do something
+				}
+			});
+		*/
+		function ReloadPosts() {
+			// erase all previous posts and disable page changing
+			document.getElementById("posts").innerHTML="Loading...";
+			document.getElementById("pages").innerHTML="&nbsp;1";
+			
+			const query = new URLSearchParams(window.location.search);
+			const page=query.has("page")?query.get("page"):"1";
+			const category=document.getElementById("category").value;
+			const topic=document.getElementById("topic").value;
+			const sort=document.getElementById("sort").value;
+			fetch("/posts?page="+page+"&limit=20&category="+category+"&topic="+topic+"&sort="+sort,{method:"GET"})
+			.then(res=>res.json())
+			.then(data=>{
+				console.log(data); // idk, log it first
+				for(const post of data)AddPost(post);
+				
+				var a,pages=document.getElementById("pages");
+				const pageCnt=Math.ceil(data.length/20);
+				for(let i=1;i<=pageCnt;++i){
+					a=document.createElementById("a");
+					a.innerHTML=i;
+					a.setAttribute("href","/main.html?page="+i);
+					pages.appendChild(a);
+				}
+			});
+		}
+		ReloadPosts();
 	</script>
 </body>
 </html>
