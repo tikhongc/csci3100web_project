@@ -32,13 +32,13 @@
 	<hr style="margin: 0;"/>
 	<div style="padding: 0.5em;">
 		<div style="margin-bottom: 0.5em;">
-			<label for="category">Category: </label><select id="category" onchange="ReloadPosts();">
+			<label for="category">Category: </label><select id="category" onchange="ReloadPosts(true);">
 				<option value="">All</option>
 			</select>,
-			<label for="topic">Topic: </label><select id="topic" onchange="ReloadPosts();">
+			<label for="topic">Topic: </label><select id="topic" onchange="ReloadPosts(true);">
 				<option value="">All</option>
 			</select>,
-			<label for="sort">Sort by: </label><select id="sort" onchange="ReloadPosts();">
+			<label for="sort">Sort by: </label><select id="sort" onchange="ReloadPosts(false);">
 				<option value="timeDsc" selected>Time, descending</option>
 				<option value="timeAsc">Time, ascending</option>
 				<option value="voteDsc">Votes, descending</option>
@@ -56,7 +56,12 @@
 		Profile things probably
 	</div>
 	<script>
-		// fetch topics
+		function toTitleCase(str) {
+			var arr=str.split(" "),i=0;
+			for(const word of arr)arr[i++]=word[0].toUpperCase()+word.slice(1,word.length);
+			return arr.join(" ");
+		}
+		// fetch topics and categories
 		fetch("/lists/topic",{method:"GET"})
 		.then(res=>res.json())
 		.then(data=>{
@@ -67,9 +72,7 @@
 				option.innerHTML=toTitleCase(topic);
 				select.appendChild(option);
 			}
-		});
-		// fetch categories
-		fetch("/lists/category",{method:"GET"})
+			return fetch("/lists/category",{method:"GET"});})
 		.then(res=>res.json())
 		.then(data=>{
 			var option,select=document.getElementById("category");
@@ -79,9 +82,10 @@
 				option.innerHTML=toTitleCase(category);
 				select.appendChild(option);
 			}
-		});
+		})
+		.catch(err=>console.log("Error: unable to fetch information.\n",err));
 		
-		function addPost(data) { // data is an object
+		function AddPost(data) { // data is an object
 			var post=document.createElement("div");
 			var p=document.createElement("p");
 			var obj=document.createElement("div");
@@ -120,24 +124,32 @@
 			
 			const query = new URLSearchParams(window.location.search);
 			const page=query.has("page")?query.get("page"):"1";
+			const limit=10; // temporary value
 			const category=document.getElementById("category").value;
 			const topic=document.getElementById("topic").value;
 			const sort=document.getElementById("sort").value;
-			fetch("/posts?page="+page+"&limit=20&category="+category+"&topic="+topic+"&sort="+sort,{method:"GET"})
+			fetch("/posts?page="+page+"&limit="+limit+"&category="+category+"&topic="+topic+"&sort="+sort,{method:"GET"})
 			.then(res=>res.json())
 			.then(data=>{
-				console.log(data); // idk, log it first
-				for(const post of data)AddPost(post);
-				
+				if(data.length){
+					document.getElementById("posts").innerHTML="";
+					document.getElementById("pages").innerHTML="";
+					for(const post of data)AddPost(post);
+					return fetch("/count?category="+category+"&topic="+topic,{method:"GET"});
+				} else document.getElementById("posts").innerHTML="No posts found :(";
+			})
+			.then(res=>res.text())
+			.then(count=>{
 				var a,pages=document.getElementById("pages");
-				const pageCnt=Math.ceil(data.length/20);
+				const pageCnt=Math.ceil(count/limit);
 				for(let i=1;i<=pageCnt;++i){
-					a=document.createElementById("a");
+					a=document.createElement("a");
 					a.innerHTML=i;
 					a.setAttribute("href","/main.html?page="+i);
 					pages.appendChild(a);
 				}
-			});
+			})
+			.catch(err=>console.log("Error: unable to fetch posts and/or pages.\n",err));
 		}
 		ReloadPosts();
 	</script>
