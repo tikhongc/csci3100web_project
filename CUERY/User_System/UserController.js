@@ -28,7 +28,6 @@ function validateEmail(email) {
         year: req.body.year,
     });
     if (!validateEmail(req.body.newEmail))
-          //res.send('error');
         res.redirect('/registration.html?invalid=2');
 else{
     try{
@@ -69,8 +68,9 @@ else{
         const token = await user.Token();
         console.log("Login Successfully.")
         //res.send(currentUser);
-        //res.redirect('/main.html');
-        res.send({ user, token });  
+        res.redirect('/main.html');
+        //res.send({ user, token });
+        //hide the private user data    
     }catch(error){
        res.status(400);//bad request
        res.send(error);

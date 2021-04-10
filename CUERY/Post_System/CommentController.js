@@ -55,7 +55,8 @@ router.get('/comments/children/:id', authentication, async (req, res) => {
 
 //3. Create a comment
 router.post('/comments', authentication, async (req, res) => {
- const newComment = new CommentModel({
+
+    const newComment = new CommentModel({
         ...req.body,
         owner: req.user._id,
     });
