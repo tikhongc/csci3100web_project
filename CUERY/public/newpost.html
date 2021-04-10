@@ -50,8 +50,7 @@
 			for(const word of arr)arr[i++]=word[0].toUpperCase()+word.slice(1,word.length);
 			return arr.join(" ");
 		}
-	
-		// fetch topics
+		// fetch topics and categories
 		fetch("/lists/topic",{method:"GET"})
 		.then(res=>res.json())
 		.then(data=>{
@@ -62,9 +61,7 @@
 				option.innerHTML=toTitleCase(topic);
 				select.appendChild(option);
 			}
-		});
-		// fetch categories
-		fetch("/lists/category",{method:"GET"})
+			return fetch("/lists/category",{method:"GET"}))
 		.then(res=>res.json())
 		.then(data=>{
 			var option,select=document.getElementById("category");
@@ -74,7 +71,8 @@
 				option.innerHTML=toTitleCase(category);
 				select.appendChild(option);
 			}
-		});
+		})
+		.catch(err=>console.log("Error: unable to fetch information.\n",err));
 	
 		document.getElementById("content").addEventListener("submit",function(e){
 			e.preventDefault();
