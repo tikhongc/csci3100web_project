@@ -13,10 +13,11 @@ const router = new express.Router();
  * The user can:
  * 1. Read a post with an optional filter
  * 2. Retrieve a number of posts with an optional filter
- * 3. Create a post
- * 4. Modify a post of its title, content, category, topic, and status
- * 5. Cast a vote only once or cancel a vote
- * 6. Delete a post
+ * 3. Retrieve the number of posts with an optional filter
+ * 4. Create a post
+ * 5. Modify a post of its title, content, category, topic, and status
+ * 6. Cast a vote only once or cancel a vote
+ * 7. Delete a post
  */
 
 //1. Read a post
@@ -71,7 +72,6 @@ router.get('/posts', async (req, res) => {
             break;
         default:
             sort = "-createdAt";
-            break;
     }
 
     //parsing optional queries
@@ -79,11 +79,7 @@ router.get('/posts', async (req, res) => {
     if(req.query.topic) filter.topic = req.query.topic;
     if(req.query.category) filter.category = req.query.category;
     if(req.query.time) {
-        if(!["day", "week", "month", "year"].includes(req.query.time)) {
-            return res.status(400).send({error: "Invalid time range. Please use day, week, month, or year."});
-        }
-
-        const dayLength = 1000 * 60 * 60 * 24;
+		const dayLength = 1000 * 60 * 60 * 24;
         var time;
         switch(req.query.time) {
             case "day":
@@ -97,6 +93,8 @@ router.get('/posts', async (req, res) => {
                 break;
             case "year":
                 time = Date.now() - dayLength * 365;
+			default:
+				return res.status(400).send({error: "Invalid time range. Please use day, week, month, or year."});
         }
 
         filter.createdAt = {
@@ -115,7 +113,50 @@ router.get('/posts', async (req, res) => {
     }
 });
 
-//2. Create a post
+//3. Retrieve the number of posts
+/**
+ * Optional queries:
+ * 1. category
+ * 2. topic
+ * 3. time limit (last day, week, month, or year)
+ */
+router.get('/count', async (req, res) => {
+    //parsing optional queries
+    var filter = {};
+    if(req.query.topic) filter.topic = req.query.topic;
+    if(req.query.category) filter.category = req.query.category;
+    if(req.query.time) {
+        const dayLength = 1000 * 60 * 60 * 24;
+        var time;
+        switch(req.query.time) {
+            case "day":
+                time = Date.now() - dayLength;
+                break;
+            case "week":
+                time = Date.now() - dayLength * 7;
+                break;
+            case "month":
+                time = Date.now() - dayLength * 30;
+                break;
+            case "year":
+                time = Date.now() - dayLength * 365;
+			default:
+				return res.status(400).send({error: "Invalid time range. Please use day, week, month, or year."});
+        }
+
+        filter.createdAt = {
+            $gt:time
+        };
+    }
+
+    //parsing response
+	PostModel.countDocuments(filter,(err,count)=>{
+		if(err)res.status(500).send(error);
+		else res.send(count.toString());
+	});
+});
+
+//4. Create a post
 router.post('/posts', authentication, async (req, res) => {
 const newPost = new PostModel({
         ...req.body,
@@ -128,7 +169,7 @@ const newPost = new PostModel({
     }
 });
 
-//3. Modify a post of its title, content, category, topic, and status
+//5. Modify a post of its title, content, category, topic, and status
 router.patch('/posts/:id', authentication, async (req, res) => {
     //Validating legitimacy of the update request
     updates = Object.keys(req.body);
@@ -150,7 +191,7 @@ router.patch('/posts/:id', authentication, async (req, res) => {
     }
 });
 
-//4. Cast a vote only once or cancel a vote
+//6. Cast a vote only once or cancel a vote
 //The request body must use a vote object
 /**
  *   An example vote object:
@@ -236,7 +277,7 @@ router.patch('/posts/vote/:id',authentication, async (req, res) => {
     }
 });
 
-//5. Delete a post
+//7. Delete a post
 router.delete('/posts/:id', authentication, async (req, res) => {
     try {
         const post = await PostModel.findByIdAndDelete(req.params.id);
