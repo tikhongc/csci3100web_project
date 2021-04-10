@@ -52,7 +52,7 @@
 	<script>
 		function toTitleCase(str) {
 			var arr=str.split(" "),i=0;
-			for(word of arr)arr[i++]=word[0].toUpperCase()+word.slice(1,word.length);
+			for(const word of arr)arr[i++]=word[0].toUpperCase()+word.slice(1,word.length);
 			return arr.join(" ");
 		}
 	
@@ -60,7 +60,7 @@
 		.then(res=>res.json())
 		.then(data=>{
 			var option,select=document.getElementById("topic");
-			for(topic of data){
+			for(const topic of data){
 				option=document.createElement("option");
 				option.value=topic;
 				option.innerHTML=toTitleCase(topic);
