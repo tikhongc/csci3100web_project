@@ -9,9 +9,11 @@ const app = express();
 require('./CUERY/mongodb/mongoose');
 const bodyParser = require('body-parser');
 const port = process.env.PORT || 3000;// nodemon server.js
+var cookieParser = require('cookie-parser')
 
 
 app.use(bodyParser.urlencoded({extended: false}));
+app.use(cookieParser())
 app.use(express.static('./CUERY/public'));
 app.use(express.json())
 //registe router

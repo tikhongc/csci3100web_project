@@ -20,7 +20,7 @@ const router = new express.Router();
  */
 
 //1. Read a post
-router.get('/posts/:id', authentication, async (req, res) => {
+router.get('/posts/:id', async (req, res) => {
     try {
         const post = await PostModel.findById(req.params.id);
         if(!post) {
