@@ -44,6 +44,7 @@ else{
 }
 })
 
+var cookieParser = require('cookie-parser')
 
  //for user to log in 
  User.post('/login',async(req,res)=>{
@@ -56,7 +57,6 @@ else{
              //if error:not user be found
             //res.send('account does not exist!');
             return res.redirect('/login.html?loginError=1');
-            //user.PasswordReset();
         } 
         const isMatch = await bcrypt.compare(password, user.password);//hash password
         if (!isMatch) {    
@@ -64,18 +64,21 @@ else{
           return res.send('Incorrect password!');
         }
          //const user = await User.login(email, password);//login_authentication
-        //reuse token generate 
         const token = await user.Token();
-        console.log("Login Successfully.")
-        //res.send(currentUser);
+        console.log("Login Successfully.");
+        let options = {
+            path:"/",
+            sameSite:true,
+            maxAge: 1000 * 60 * 60 * 24, // would expire after 24 hours
+            httpOnly: true, // The cookie only accessible by the web server
+        }    
+        res.cookie('x-access-token',token, options) ;
         res.redirect('/main.html');
         //res.send({ user, token });
-        //hide the private user data    
     }catch(error){
        res.status(400);//bad request
        res.send(error);
     }
-
 })
 
 //logout

@@ -1,22 +1,23 @@
 const jwt = require('jsonwebtoken');//https://www.npmjs.com/package/jsonwebtoken
 const usermodel = require('../../User_System/UserModel');
+var cookieParser = require('cookie-parser');
 
-//new request -> dosth ->run router
-//function use to limit what api method user can access to
  const authenticationToken = async (req, res, next) => {
     try {
-         const token = req.header('Authentication').replace('Tokens ', '');
-         //console.log(token);
-         const decoded = jwt.verify(token, ""+process.env.JWT_SECRET);
+        let token = req.cookies['x-access-token'];
+        //console.log(token);
+         const decoded = jwt.verify(token, 'Express');
          const user = await usermodel.findOne({ _id: decoded._id, 'tokens.token': token });
-         if (!user) { throw new Error(); }
+         if (!user) {          //return res.redirect('/login,html');
+         throw new Error(); }
         req.user = user;
         req.token = token;
 
          next();
      } catch (e) {
          res.status(401);
-         res.send({ error: 'Please authenticate.' });
+         res.send({         //return res.redirect('/login.html');
+         error: 'Please authenticate.' });
      }
  }
 
