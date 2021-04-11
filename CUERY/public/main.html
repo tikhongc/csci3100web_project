@@ -32,13 +32,13 @@
 	<hr style="margin: 0;"/>
 	<div style="padding: 0.5em;">
 		<div style="margin-bottom: 0.5em;">
-			<label for="category">Category: </label><select id="category" onchange="ReloadPosts(true);">
+			<label for="category">Category: </label><select id="category" onchange="ReloadPosts(false);">
 				<option value="">All</option>
 			</select>,
-			<label for="topic">Topic: </label><select id="topic" onchange="ReloadPosts(true);">
+			<label for="topic">Topic: </label><select id="topic" onchange="ReloadPosts(false);">
 				<option value="">All</option>
 			</select>,
-			<label for="sort">Sort by: </label><select id="sort" onchange="ReloadPosts(false);">
+			<label for="sort">Sort by: </label><select id="sort" onchange="ReloadPosts(true);">
 				<option value="timeDsc" selected>Time, descending</option>
 				<option value="timeAsc">Time, ascending</option>
 				<option value="voteDsc">Votes, descending</option>
@@ -85,6 +85,7 @@
 		})
 		.catch(err=>console.log("Error: unable to fetch information.\n",err));
 		
+		function ViewPost(postid) {window.location="/viewpost.html?postid="+postid;}}
 		function AddPost(data) { // data is an object
 			var post=document.createElement("div");
 			var p=document.createElement("p");
@@ -100,12 +101,12 @@
 			obj.innerHTML=data.owner;
 			p.appendChild(obj);
 			post.appendChild(p);
+			post.setAttribute("onclick","ViewPost("+data._id+");");
 			document.getElementById("posts").appendChild(post);
 			// can add more information
 		}
 		// test function
 		// addPost({title:"foo",owner:"bar",upvotes:123,downvotes:24});
-		
 		/*
 			// add posts if scroll reaches bottom
 			window.addEventListener("scroll",function(e){
@@ -117,7 +118,7 @@
 				}
 			});
 		*/
-		function ReloadPosts() {
+		function ReloadPosts(keepPage) {
 			// erase all previous posts and disable page changing
 			document.getElementById("posts").innerHTML="Loading...";
 			document.getElementById("pages").innerHTML="&nbsp;1";
@@ -133,13 +134,13 @@
 			.then(data=>{
 				if(data.length){
 					document.getElementById("posts").innerHTML="";
-					document.getElementById("pages").innerHTML="";
 					for(const post of data)AddPost(post);
 					return fetch("/count?category="+category+"&topic="+topic,{method:"GET"});
 				} else document.getElementById("posts").innerHTML="No posts found :(";
 			})
 			.then(res=>res.text())
 			.then(count=>{
+				document.getElementById("pages").innerHTML="";
 				var a,pages=document.getElementById("pages");
 				const pageCnt=Math.ceil(count/limit);
 				for(let i=1;i<=pageCnt;++i){
