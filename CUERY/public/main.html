@@ -85,7 +85,7 @@
 		})
 		.catch(err=>console.log("Error: unable to fetch information.\n",err));
 		
-		function ViewPost(postid) {window.location="/viewpost.html?postid="+postid;}}
+		function ViewPost(postid) {window.location="/viewpost.html?postid="+postid;}
 		function AddPost(data) { // data is an object
 			var post=document.createElement("div");
 			var p=document.createElement("p");
@@ -101,7 +101,7 @@
 			obj.innerHTML=data.owner;
 			p.appendChild(obj);
 			post.appendChild(p);
-			post.setAttribute("onclick","ViewPost("+data._id+");");
+			post.setAttribute("onclick","ViewPost('"+data._id+"');");
 			document.getElementById("posts").appendChild(post);
 			// can add more information
 		}
