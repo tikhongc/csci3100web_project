@@ -26,12 +26,8 @@
 <body>
 	<div style="line-height: 100%; padding: 0.5em;">
 		<h1 class="d-inline-block mx-2">Cuery</h1>
-		<img src="we-don't-have-a-logo.jpg" alt="Cuery Logo"/>
+		<img src="whatever-because-we-don't-have-a-logo.jpg" alt="Cuery Logo"/>
 		<img src="avatar.jpg" class="avatar" onclick="document.getElementById('sidebar').classList.toggle('sidebar-visible');"/>
-	</div>
-	<div id="sidebar" class="sidebar">
-		Something here<br/>
-		Profile things probably
 	</div>
 	<hr style="margin: 0;"/>
 	<div style="padding: 0.5em;">
@@ -55,104 +51,11 @@
 		<div id="posts"></div>
 		<div style="text-align: center;">Page<span id="pages">1</span></div>
 	</div>
-	<script>
-		function toTitleCase(str) {
-			var arr=str.split(" "),i=0;
-			for(const word of arr)arr[i++]=word[0].toUpperCase()+word.slice(1,word.length);
-			return arr.join(" ");
-		}
-		// fetch topics and categories
-		fetch("/lists/topic",{method:"GET"})
-		.then(res=>res.json())
-		.then(data=>{
-			var option,select=document.getElementById("topic");
-			for(const topic of data){
-				option=document.createElement("option");
-				option.value=topic;
-				option.innerHTML=toTitleCase(topic);
-				select.appendChild(option);
-			}
-			return fetch("/lists/category",{method:"GET"});})
-		.then(res=>res.json())
-		.then(data=>{
-			var option,select=document.getElementById("category");
-			for(const category of data){
-				option=document.createElement("option");
-				option.value=category;
-				option.innerHTML=toTitleCase(category);
-				select.appendChild(option);
-			}
-		})
-		.catch(err=>console.log("Error: unable to fetch information.\n",err));
-		
-		function ViewPost(postid) {window.location="/viewpost.html?postid="+postid;}
-		function AddPost(data) { // data is an object
-			var post=document.createElement("div");
-			var p=document.createElement("p");
-			var obj=document.createElement("div");
-			p.innerHTML=data.upvotes-data.downvotes;
-			p.style.fontSize="200%";
-			post.appendChild(p);
-			p=document.createElement("p");
-			obj.innerHTML=data.title;
-			p.appendChild(obj);
-			obj=document.createElement("div");
-			obj.classList.add("text-secondary");
-			obj.innerHTML=data.owner;
-			p.appendChild(obj);
-			post.appendChild(p);
-			post.setAttribute("onclick","ViewPost('"+data._id+"');");
-			document.getElementById("posts").appendChild(post);
-			// can add more information
-		}
-		// test function
-		// addPost({title:"foo",owner:"bar",upvotes:123,downvotes:24});
-		/*
-			// add posts if scroll reaches bottom
-			window.addEventListener("scroll",function(e){
-				const scroll = (window.scrollY/(document.body.clientHeight-window.innerHeight));
-				console.log(scroll);
-				if(scroll>0.9){ // threshold: 90% scroll
-					console.log("threshold-reached");
-					// do something
-				}
-			});
-		*/
-		function ReloadPosts(keepPage) {
-			// erase all previous posts and disable page changing
-			document.getElementById("posts").innerHTML="Loading...";
-			document.getElementById("pages").innerHTML="&nbsp;1";
-			
-			const query = new URLSearchParams(window.location.search);
-			const page=query.has("page")?query.get("page"):"1";
-			const limit=10; // temporary value
-			const category=document.getElementById("category").value;
-			const topic=document.getElementById("topic").value;
-			const sort=document.getElementById("sort").value;
-			fetch("/posts?page="+page+"&limit="+limit+"&category="+category+"&topic="+topic+"&sort="+sort,{method:"GET"})
-			.then(res=>res.json())
-			.then(data=>{
-				if(data.length){
-					document.getElementById("posts").innerHTML="";
-					for(const post of data)AddPost(post);
-					return fetch("/count?category="+category+"&topic="+topic,{method:"GET"});
-				} else document.getElementById("posts").innerHTML="No posts found :(";
-			})
-			.then(res=>res.text())
-			.then(count=>{
-				document.getElementById("pages").innerHTML="";
-				var a,pages=document.getElementById("pages");
-				const pageCnt=Math.ceil(count/limit);
-				for(let i=1;i<=pageCnt;++i){
-					a=document.createElement("a");
-					a.innerHTML=i;
-					a.setAttribute("href","/main.html?page="+i);
-					pages.appendChild(a);
-				}
-			})
-			.catch(err=>console.log("Error: unable to fetch posts and/or pages.\n",err));
-		}
-		ReloadPosts();
-	</script>
+	<div id="sidebar" class="sidebar">
+		Something here<br/>
+		Profile things probably<br/>
+                <button style="float: right;" onclick="Logout();">Log out</button>
+	</div>
+	<script type=text/javascript src="./htmlScript/mainscript.js"></script>
 </body>
 </html>

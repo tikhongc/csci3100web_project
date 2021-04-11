@@ -23,7 +23,7 @@
 			<div style="max-height: 400px; padding: 5%;">
 				<h1 style="text-align: center;">Cuery</h1>
 				<br/>
-				<form id="registrationForm" onsubmit="userRegister();" action="" method="POST"> <!-- <form id="form" action="something" method="post"> -->
+				<form id="registrationForm" onsubmit="return userRegister();" action="" method="POST"> <!-- <form id="form" action="something" method="post"> -->
 					<table>
 						<tr>
 							<td> <label for="newEmail">Email:&nbsp;</label> </td>
@@ -64,15 +64,15 @@
 	</div>
 	<script>
         const params = new URLSearchParams(window.location.search);
-        if(params.has("loginError")){
-			switch(params.get("loginError")){
+        if(params.has("invalid")){
+			switch(params.get("invalid")){
 				case "1":
-					alert("Login Error. (Account does not exist)");
+					alert("Registration Error. (Please use another username)");
 					break;
 				case "2":
-					alert("Login Error. (Incorrect password)");
+					alert("Registration Error. (Invalid email)");
 			}
-			window.location.href = "login.html";
+			window.location.href = "registration.html";
 		}
 		
         function redirect() {window.location.href = "login.html";}
@@ -83,11 +83,26 @@
             let pw1 = document.getElementById("newPassword").value;
             let pw2 = document.getElementById("confirmPassword").value;
 			
-            if (newEmail.length === 0 || username.length === 0 || pw1.length === 0) alert("Please fill in all the information.");
-            else if (username.length < 3 || username.length > 10) alert("Username must contain 3-10 characters.");
-            else if (pw1.length < 8 || pw1.length > 18) alert("Password must contain 8-18 characters.");
-            else if (pw1!==pw2) alert("Password and Confirm Password must be the same.");
-            else document.getElementById("registrationForm").action = "user_create";
+            if (newEmail.length === 0 || username.length === 0 || pw1.length === 0){
+                alert("Please fill in all the information.");
+                return false;
+            }
+            else if (username.length < 3 || username.length > 10){
+                alert("Username must contain 3-10 characters.");
+                return false;
+            }
+            else if (pw1.length < 8 || pw1.length > 18){
+                alert("Password must contain 8-18 characters.");
+                return false;
+            }
+            else if (pw1!==pw2) {
+                alert("Password and Confirm Password must be the same.");
+                return false;
+            } 
+            else{
+                document.getElementById("registrationForm").action = "user_create";
+                return true;
+            }
         }
 		
 		// document.getElementById("registrationForm").addEventListener("submit",(e)=>e.preventDefault());

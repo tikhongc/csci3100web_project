@@ -23,7 +23,7 @@
 			<div style="max-height: 400px; padding: 5%;">
 				<h1 style="text-align: center;">Cuery</h1>
 				<br/>
-				<form id="loginForm" onsubmit="userLogin();" action="" method="POST">
+				<form id="loginForm" onsubmit="return userLogin();" action="" method="POST">
 					<table>
 						<tr>
 							<td> <label for="email">Email:&nbsp;</label> </td>
@@ -59,8 +59,14 @@
             let email = document.getElementById("email").value;
             let password = document.getElementById("password").value;
 			
-            if (email.length === 0 || password.length === 0) alert("Please fill in all the information.");
-            else document.getElementById("loginForm").action = "login";
+            if (email.length === 0 || password.length === 0) {
+                alert("Please fill in all the information.");
+                return false;
+            }
+            else{
+                document.getElementById("loginForm").action = "login";
+                return true;
+            }
         }
 		
 		// document.getElementById("loginForm").addEventListener("submit",(e)=>e.preventDefault());
