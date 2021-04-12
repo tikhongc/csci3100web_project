@@ -3,9 +3,10 @@ const User = require("../User_System/UserModel");
 
 const CommentSchema = mongoose.Schema({
     owner: {
-        type: mongoose.Schema.Types.String,
-        required: true,
-        ref: 'User'
+        type: String,
+        //type: mongoose.Schema.Types.String,
+        required: true
+        //ref: 'User'
     },
     parentPost:{
         type: String,
@@ -52,7 +53,6 @@ const CommentSchema = mongoose.Schema({
 });
 
 CommentSchema.pre('save', async function(next) {
-    //this is the controversial schema, needs reworking!!
       const comment = this;
       if(comment.isModified('upvotes') || comment.isModified('downvotes')) {
           //Calculating the total votes

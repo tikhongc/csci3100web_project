@@ -54,12 +54,10 @@ router.get('/comments/children/:id', authentication, async (req, res) => {
 });
 
 //3. Create a comment
-router.post('/comments', authentication, async (req, res) => {
+router.post('/comments', async (req, res) => {
+//router.post('/comments', authentication, async (req, res) => {
 
-    const newComment = new CommentModel({
-        ...req.body,
-        owner: req.user._id
-    });
+    const newComment = req.body;
 
     try {
         const parentPost = await PostModel.findById(newComment.parentPost);
@@ -207,6 +205,22 @@ router.delete('/comments/:id', authentication, async (req, res) => {
         }
     } catch(error) {
         return res.status(500).send(error);
+    }
+});
+
+//Find out if an an owner has already voted in a comment
+router.get('/comments/findVoteOwner/:id', async (req, res) => {
+    const owner = req.query.owner;
+    try {
+        const comment = await CommentModel.findById(req.params.id);
+        if(!comment) {
+            return res.status(404).send();
+        }
+        if(comment.upvoteOwners.includes(owner)) return res.send({status: "upvote"});
+        if(comment.downvoteOwners.includes(owner)) return res.send({status:"downvote"});
+        return res.send({status:"none"});
+    } catch(error) {
+        res.status(500).send(error);
     }
 });
 
