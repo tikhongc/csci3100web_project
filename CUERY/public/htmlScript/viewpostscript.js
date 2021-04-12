@@ -114,16 +114,27 @@ async function downvote() {
 function updateStatus() {
     switch(voteStatus) {
         case "upvote":
-            document.getElementById("upvote_button").style.backgroundImage = "url('./img/up_active.png')";
-            document.getElementById("downvote_button").style.backgroundImage = "url('./img/down_inactive.png')";
+            document.getElementById("upvote_button").style.backgroundImage = "url('../img/up_active.png')";
+            document.getElementById("downvote_button").style.backgroundImage = "url('../img/down_inactive.png')";
             break;
         case "downvote":
-            document.getElementById("upvote_button").style.backgroundImage = "url('./img/up_inactive.png')";
-            document.getElementById("downvote_button").style.backgroundImage = "url('./img/down_active.png')";
+            document.getElementById("upvote_button").style.backgroundImage = "url('../img/up_inactive.png')";
+            document.getElementById("downvote_button").style.backgroundImage = "url('../img/down_active.png')";
             break;
         case "none":
-            document.getElementById("upvote_button").style.backgroundImage = "url('./img/up_inactive.png')";
-            document.getElementById("downvote_button").style.backgroundImage = "url('./img/down_inactive.png')";
+            document.getElementById("upvote_button").style.backgroundImage = "url('../img/up_inactive.png')";
+            document.getElementById("downvote_button").style.backgroundImage = "url('../img/down_inactive.png')";
             break;
     }
 }
+
+function AddCommentToList(data) {
+    var comment = document.createElement("div");
+    comment.style.borderLeft = "3px solid rgba(0, 0, 0, .1)";
+    comment.style.height = "40px";
+    document.getElementById("comments").appendChild(comment);
+}
+
+AddCommentToList({});
+AddCommentToList({});
+AddCommentToList({});
