@@ -316,7 +316,7 @@ router.get('/lists/:list', async (req, res) => {
 
 //find owner
 router.get('/posts/findVoteOwner/:id', async (req, res) => {
-    const owner = req.body.owner;
+    const owner = req.query.owner;
     try {
         const post = await PostModel.findById(req.params.id);
         if(!post) {
