@@ -160,7 +160,7 @@ router.get('/count', async (req, res) => {
 router.post('/posts', authentication, async (req, res) => {
 const newPost = new PostModel({
         ...req.body,
-        owner: req.user._id,
+        owner: req.user.name,
     });    try {
         await newPost.save();
         res.status(201).send(newPost);

@@ -2,19 +2,17 @@
 //using send grid to send email //https://app.sendgrid.com/guide
 
 const Mail = require('@sendgrid/mail');
-const APIkey='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';
-Mail.setApiKey(APIkey);
-
+Mail.setApiKey(process.env.SENDGRID_API_KEY)
 // types of email 
 
-//welcome email
-//user reovery email
-//notification email ?
+//Welcome email
+//Reovery email
+//Confrimation email 
 
 const WelcomeEmail = (email, name) => {
     Mail.send({
         to: email,
-        from: '1205542199@qq.com',
+        from: 'chiutikhong@yandex.com',
         subject: 'Thanks for joining in Cuery community!',
         text: `Welcome to the Cuery, ${name}. +introduction`,
         html: '<strong>and easy to do anywhere, even with Node.js</strong>'
@@ -29,7 +27,7 @@ const WelcomeEmail = (email, name) => {
 const RecoveryEmail = (email,name,link) => {
     Mail.send({
         to: email,
-        from: '1205542199@qq.com',
+        from: 'chiutikhong@yandex.com',
         subject: 'Account Activation Link',
         text:`Hi ${name}!\n 
         Please click on the following link ${link} to reset your password. \n

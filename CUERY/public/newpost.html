@@ -70,20 +70,30 @@
 			}
 		})
 		.catch(err=>console.log("Error: unable to fetch information.\n",err));
-	
+
 		function CreatePost() {
 			var data = {
 				title:document.getElementById("title").value,
-				owner:"owner", // not sure how to get the owner name yet
 				category:document.getElementById("category").value,
 				topic:document.getElementById("topic").value,
 				content:document.getElementById("content").value
 			};
+
+		    const options = {
+             method: 'POST',
+             headers: 
+			 {
+                 'Content-Type': 'application/json'
+              },
+              body:JSON.stringify(data)
+             };
 			
-			fetch("/posts",{method:"POST",body:data})
-			.then(res=>res.text())
-			.then(txt=>console.log(txt));	// idk, console log it first
-		}
+			fetch("/posts",options)
+			.then(res=>res.json())
+			.then(alert('Post creation success !'))
+			.then(window.location.href = "main.html")
+			.catch(err=>console.log(err));
+	}
 	</script>
 </body>
 </html>
