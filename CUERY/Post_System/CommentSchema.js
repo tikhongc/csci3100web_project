@@ -3,7 +3,7 @@ const User = require("../User_System/UserModel");
 
 const CommentSchema = mongoose.Schema({
     owner: {
-        type: mongoose.Schema.Types.String,
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'User'
     },

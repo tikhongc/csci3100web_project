@@ -18,7 +18,7 @@ const topicList = ["anthropology", "english studies", "fine arts",
 const PostSchema = mongoose.Schema(
     {
          owner: {
-            type: mongoose.Schema.Types.String,
+            type: mongoose.Schema.Types.ObjectId,
             required: true,
             ref: 'User'
         },
