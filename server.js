@@ -1,4 +1,3 @@
-
 //file to connect and listen to  server for user
 
 const express = require('express');
@@ -23,5 +22,5 @@ app.use(CommentRouter);
 
 
 app.listen(port,()=>{
-    console.log('Serve Starting!'+port);
+    console.log('Server Starting!'+port);
 })

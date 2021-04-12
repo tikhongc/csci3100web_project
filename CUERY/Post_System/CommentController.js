@@ -58,7 +58,7 @@ router.post('/comments', authentication, async (req, res) => {
 
     const newComment = new CommentModel({
         ...req.body,
-        owner: req.user._id,
+        owner: req.user.name,
     });
 
     try {
