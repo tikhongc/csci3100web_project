@@ -33,17 +33,52 @@ const options = {
 
 var user;
 // check the user's cookie before loading information
-fetch('/checkCookie', options).then(res=>res.json())
-.then(data=>{
-    if (data.answer === 'NA'){
-        alert("Please login first before viewing the posts : )");
-        window.location.href = "login.html";
-    }
-    else{   // continue loading if user are verified,  can use the user object received in the response
-        user = data;
-        console.log(user); // user information
-        
-	// fetch topics and categories
+function userAuthentication() {
+	fetch('/checkCookie', options).then(res=>res.json())
+	.then(data=>{
+		if (data.answer === 'NA'){
+			alert("Please login first before viewing the posts : )");
+			window.location.href = "login.html";
+		}
+		else{   // continue loading if user are verified,  can use the user object received in the response
+			user = data;
+			console.log(user); // user information
+			
+		// fetch topics and categories
+		fetch("/lists/topic",{method:"GET"})
+		.then(res=>res.json())
+		.then(data=>{
+			var option,select=document.getElementById("topic");
+			for(const topic of data){
+				option=document.createElement("option");
+				option.value=topic;
+				option.innerHTML=toTitleCase(topic);
+				select.appendChild(option);
+			}
+			return fetch("/lists/category",{method:"GET"});})
+		.then(res=>res.json())
+		.then(data=>{
+			var option,select=document.getElementById("category");
+			for(const category of data){
+				option=document.createElement("option");
+				option.value=category;
+				option.innerHTML=toTitleCase(category);
+				select.appendChild(option);
+			}
+		})
+		.catch(err=>console.log("Error: unable to fetch information.\n",err));
+
+		ReloadPosts();
+		}
+	});
+}
+
+function toTitleCase(str) {
+	var arr=str.split(" "),i=0;
+	for(const word of arr)arr[i++]=word[0].toUpperCase()+word.slice(1,word.length);
+	return arr.join(" ");
+}
+function FetchLists() { // fetch topics and categories
 	fetch("/lists/topic",{method:"GET"})
 	.then(res=>res.json())
 	.then(data=>{
@@ -54,7 +89,7 @@ fetch('/checkCookie', options).then(res=>res.json())
 			option.innerHTML=toTitleCase(topic);
 			select.appendChild(option);
 		}
-		return fetch("/lists/category",{method:"GET"});})
+		return fetch("/lists/category",{method:"GET"})})
 	.then(res=>res.json())
 	.then(data=>{
 		var option,select=document.getElementById("category");
@@ -66,18 +101,14 @@ fetch('/checkCookie', options).then(res=>res.json())
 		}
 	})
 	.catch(err=>console.log("Error: unable to fetch information.\n",err));
-
-	ReloadPosts();
-    }
-});
-
-
-function toTitleCase(str) {
-	var arr=str.split(" "),i=0;
-	for(const word of arr)arr[i++]=word[0].toUpperCase()+word.slice(1,word.length);
-	return arr.join(" ");
 }
-              
+function FetchHeader() {
+	fetch("../header.html")
+	.then(res=>res.text())
+	.then(txt=>document.getElementById("header").innerHTML=txt)
+	.catch(err=>console.log("Unable to fetch header.\n",err));
+}
+
 function ViewPost(postid) {window.location="/viewpost.html?postid="+postid;}
 function AddPost(data) { // data is an object
 	var post=document.createElement("div");
@@ -98,10 +129,7 @@ function AddPost(data) { // data is an object
 	document.getElementById("posts").appendChild(post);
 	// can add more information
 }
-                /*
-		// test function
-		// addPost({title:"foo",owner:"bar",upvotes:123,downvotes:24});
-		
+		/*
 			// add posts if scroll reaches bottom
 			window.addEventListener("scroll",function(e){
 				const scroll = (window.scrollY/(document.body.clientHeight-window.innerHeight));
@@ -112,7 +140,7 @@ function AddPost(data) { // data is an object
 				}
 			});
 		*/
-function ReloadPosts(keepPage) {
+function ReloadPosts(keepPage) {	// keepPage still not implemented
 	// erase all previous posts and disable page changing
 	document.getElementById("posts").innerHTML="Loading...";
 	document.getElementById("pages").innerHTML="&nbsp;1";
@@ -147,6 +175,30 @@ function ReloadPosts(keepPage) {
 	.catch(err=>console.log("Error: unable to fetch posts and/or pages.\n",err));
 }
 
+function CreatePost() {
+	var data = {
+		title:document.getElementById("title").value,
+		category:document.getElementById("category").value,
+		topic:document.getElementById("topic").value,
+		content:document.getElementById("content").value
+	};
+		const options = {
+        method: 'POST',
+            headers: 
+			{
+                'Content-Type': 'application/json'
+            },
+            body:JSON.stringify(data)
+        };
+	fetch("/posts",options)
+	//.then(res=>res.json())
+	.then(res=>{
+		alert('Post creation success !');
+		window.location.href = "main.html";
+	})
+	.catch(err=>console.log(err));
+}
+
 function Logout(){
     const option = {
     method: 'POST',
@@ -167,4 +219,3 @@ function Logout(){
         console.log(err);
     });
 }
-		

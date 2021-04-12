@@ -4,10 +4,10 @@ var originalVoteCount;
 
 const params = new URLSearchParams(window.location.search);
 if(params.has("postid")) {
-        postID = params.get("postid");
-        fetch("/posts/"+params.get("postid"),{method:"GET"})
-    .then(res=>res.json())
-    .then(data=>{
+    postID = params.get("postid");
+    fetch("/posts/"+params.get("postid"),{method:"GET"})
+	.then(res=>res.json())
+	.then(data=>{
         document.getElementById("title").innerHTML=data.title;
         document.getElementById("owner").innerHTML= "Posted by " + data.owner;
         document.getElementById("text").innerHTML=data.content;
