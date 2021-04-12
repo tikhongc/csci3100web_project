@@ -29,20 +29,20 @@ function validateEmail(email) {
     });
     if (!validateEmail(req.body.newEmail))
         res.redirect('/registration.html?invalid=2');
-else{
-    try{
-         await newUser.save();//save user
-         console.log("Created");
-        WelcomeEmail(req.body.newEmail, req.body.username);     //send welcome email
-        const token = await newUser.Token();        //generate a token for the saved user and send back both toke and user
-        res.redirect('/redirection.html');
-       //res.send({newUser,token});
-    }catch(error){
-      res.redirect('/redirection.html');
-      //res.send(error);
+    else{
+        try{
+            await newUser.save();//save user
+            console.log("Created");
+            WelcomeEmail(req.body.newEmail, req.body.username);     //send welcome email
+            //const token = await newUser.Token();        //generate a token for the saved user and send back both toke and user
+            res.redirect('/redirection.html');
+           //res.send({newUser,token});
+        }catch(error){
+          res.redirect('/registration.html?invalid=1');
+          //res.send(error);
+        }
     }
-}
-})
+    })
 
 var cookieParser = require('cookie-parser')
 
@@ -61,7 +61,7 @@ var cookieParser = require('cookie-parser')
         const isMatch = await bcrypt.compare(password, user.password);//hash password
         if (!isMatch) {    
           //then compare hashed password with password stored in database
-          return res.send('Incorrect password!');
+          return res.redirect('/login.html?loginError=2');
         }
          //const user = await User.login(email, password);//login_authentication
         const token = await user.Token();
@@ -70,9 +70,9 @@ var cookieParser = require('cookie-parser')
             path:"/",
             sameSite:true,
             maxAge: 1000 * 60 * 60 * 24, // would expire after 24 hours
-            httpOnly: true, // The cookie only accessible by the web server
+            //httpOnly: true, // The cookie only accessible by the web server
         }    
-        res.cookie('x-access-token',token, options) ;
+        res.cookie('x-access-token',token, options);
         res.redirect('/main.html');
         //res.send({ user, token });
     }catch(error){
@@ -82,12 +82,12 @@ var cookieParser = require('cookie-parser')
 })
 
 //logout
-User.post('/logout',authentication,async(req,res)=>{
+User.post('/logout',authentication, async(req,res)=>{
    try{
      //remove token  when log out 
     req.user.tokens = [];
     await req.user.save();       //save user and send back information
-    res.send();
+    res.send({note: 'success'});
    }catch(error){
     res.status(500);//bad request
     res.send(error);
@@ -285,6 +285,24 @@ User.delete('/delete/:id',async(req,res)=>{
         })
 
 })
+
+User.post('/checkCookie', async (req, res)=>{
+    try{
+        console.log(req.body.userCookie);
+        const user = await UserModel.findOne({ 'tokens.token' : req.body.userCookie });
+        if (!user) {
+            //if error:not user be found
+            console.log("CANNOT FIND user with token");
+            res.send({answer: 'NA'});
+        }
+        else{
+            console.log("have user logged in");
+            res.send(user);
+        }
+    } catch(error){
+        res.send(error);
+    }
+});
 
 module.exports = User;
 

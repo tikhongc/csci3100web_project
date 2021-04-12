@@ -9,6 +9,7 @@
 		body {line-height: 200%; background-color: #8cf; overflow-x: hidden;}
 		div {height: 100%; margin: 0 auto;} /* margin: 0 auto is for centering */
 		p {display: inline-block; margin: 0.2em;}
+		a,input,select {line-height: 100%; margin-left: 0.5em;}
 		
 		button {border: 1px solid blue; border-radius: 0.5em; background-color: #def; transition: background 0.2s;}
 		button:hover {background-color: #8cf;}
@@ -31,59 +32,30 @@
 	<hr style="margin: 0;"/>
 	<div style="padding: 0.5em;">
 		<div style="margin-bottom: 0.5em;">
-			Forum -> subforum -> sort by <select id="sort">
+			<label for="category">Category: </label><select id="category" onchange="ReloadPosts(false);">
+				<option value="">All</option>
+			</select>,
+			<label for="topic">Topic: </label><select id="topic" onchange="ReloadPosts(false);">
+				<option value="">All</option>
+			</select>,
+			<label for="sort">Sort by: </label><select id="sort" onchange="ReloadPosts(true);">
 				<option value="timeDsc" selected>Time, descending</option>
-				<option value="timeAsc" selected>Time, ascending</option>
-				<option value="voteDsc" selected>Votes, descending</option>
-				<option value="voteAsc" selected>Votes, ascending</option>
-				<option value="contDsc" selected>Controversy, descending</option>
-				<option value="contAsc" selected>Controversy, ascending</option>
+				<option value="timeAsc">Time, ascending</option>
+				<option value="voteDsc">Votes, descending</option>
+				<option value="voteAsc">Votes, ascending</option>
+				<option value="contDsc">Controversy, descending</option>
+				<option value="contAsc">Controversy, ascending</option>
 			</select>
 			<button style="float: right;" onclick="window.location='/newpost.html';">Add new post</button>
 		</div>
 		<div id="posts"></div>
+		<div style="text-align: center;">Page<span id="pages">1</span></div>
 	</div>
 	<div id="sidebar" class="sidebar">
 		Something here<br/>
-		Profile things probably
+		Profile things probably<br/>
+                <button style="float: right;" onclick="Logout();">Log out</button>
 	</div>
-	<script>
-		function addPost(data) { // data is an object
-			var post=document.createElement("div");
-			var p=document.createElement("p");
-			var obj=document.createElement("div");
-			p.innerHTML=data.upvotes-data.downvotes;
-			p.style.fontSize="200%";
-			post.appendChild(p);
-			p=document.createElement("p");
-			obj.innerHTML=data.title;
-			p.appendChild(obj);
-			obj=document.createElement("div");
-			obj.classList.add("text-secondary");
-			obj.innerHTML=data.owner;
-			p.appendChild(obj);
-			post.appendChild(p);
-			document.getElementById("posts").appendChild(post);
-			// can add more information
-		}
-		// test function
-		addPost({title:"foo",owner:"bar",upvotes:123,downvotes:24});
-	
-		// add posts if reaching bottom
-		// DOESN'T work if page isn't long enough
-		// Can shift to manual page-changing if it turns out to be a poor feature
-		window.addEventListener("scroll",function(e){
-			const scroll = (window.scrollY/(document.body.clientHeight-window.innerHeight));
-			console.log(scroll);
-			if(scroll>0.9){ // threshold: 90% scroll
-				console.log("threshold-reached");
-				// do something
-			}
-		});
-		
-		fetch("/posts",{method:"GET"})
-		.then(res=>res.json())
-		.then(data=>console.log(data)); // idk, log it first
-	</script>
+	<script type=text/javascript src="./htmlScript/mainscript.js"></script>
 </body>
 </html>

@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<title>Cuery</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+	<style>
+		body {line-height: 200%; background-color: #8cf; overflow-x: hidden;}
+		div {height: 100%; margin: 0 auto;} /* margin: 0 auto is for centering */
+		p {display: inline-block; margin: 0.2em;}
+		a,input,select {line-height: 100%; margin-left: 0.5em;}
+		
+		button {border: 1px solid blue; border-radius: 0.5em; background-color: #def; transition: background 0.2s;}
+		button:hover {background-color: #8cf;}
+		button:active {background-color: #88f;}
+		
+		.avatar {position: absolute; top: 0.5em; right: 0.5em; height: 2.5rem; width: 2.5rem; cursor: pointer; z-index: 1000;}
+		.sidebar { background-color: #fff; position: absolute; top: 0px; right: 0px; min-height: 100vh; white-space: nowrap; z-index: 999; transition: width 1s; width: 0px;}
+		.sidebar-visible { width: 200px;}
+		
+		#content {border: 0.25em solid #adf; padding: 0.5em;}
+	</style>
+</head>
+<body>
+	<div style="line-height: 100%; padding: 0.5em;">
+		<h1 class="d-inline-block mx-2">Cuery</h1>
+		<img src="we-don't-have-a-logo.jpg" alt="Cuery Logo"/>
+		<img src="avatar.jpg" class="avatar" onclick="document.getElementById('sidebar').classList.toggle('sidebar-visible');"/>
+	</div>
+	<div id="sidebar" class="sidebar">
+		Something here<br/>
+		Profile things probably
+	</div>
+	<hr style="margin: 0;"/>
+	<div style="padding: 0.5em 1em;">
+		<span id="title">Title</span>, owned by <span id="owner">Owner</span>
+		<div id="content">Content</div>
+		Upvote: <span id="upvote">0</span>, Downvote: <span id="downvote">0</span><br/>
+	</div>
+	<script>
+		const params = new URLSearchParams(window.location.search);
+		if(params.has("postid"))fetch("/posts/"+params.get("postid"),{method:"GET"})
+		.then(res=>res.json())
+		.then(data=>{
+			document.getElementById("title").innerHTML=data.title;
+			document.getElementById("owner").innerHTML=data.owner;
+			document.getElementById("content").innerHTML=data.content;
+			document.getElementById("upvote").innerHTML=data.upvote;
+			document.getElementById("downvote").innerHTML=data.downvote;
+		})
+		.catch(err=>document.getElementById("content").innerHTML="Unable to fetch post :(<br/>"+err);
+	</script>
+</body>
+</html>
