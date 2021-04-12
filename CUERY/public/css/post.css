@@ -37,6 +37,7 @@ button:active {background-color: #88f;}
 
 #contentbox {
 	border: 0.25em solid #adf;
+	border-radius: 0.5em;
 	margin: 0 auto;
 	width: 700px;
 	padding: 0.5em;
@@ -67,6 +68,22 @@ button:active {background-color: #88f;}
 	padding: 0px;
 	line-height: 20px;
 	text-align: center;
+}
+#comment_editor {
+	margin: 0 auto;
+	width: 700px;
+	padding: 0;
+	overflow: auto;
+}
+#comment_editor_textarea {
+	width: 700px;
+	margin: 0;
+	padding: 0.5em;
+	line-height: 1.5em;
+	background-color: rgb(196, 229, 252);
+	resize: none;
+	border: 1px solid rgb(94, 119, 136);
+	border-radius: 5px;
 }
 #comments {
 	width: 700px;

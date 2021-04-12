@@ -2,6 +2,21 @@ var postID;
 var voteStatus = {};
 var originalVoteCount;
 
+function getTimeElapsedString(date) {
+    const minute = 60;
+    const hour = 60 * 60;
+    const day = 60 * 60 * 24;
+    const timeElapsed = (Date.now() - date) * 1000; //in seconds
+    
+    if(timeElapsed < hour) {
+        return Math.ceil(timeElapsed / minute) + " minutes ago";
+    }
+    if(timeElapsed < day) {
+        return Math.ceil(timeElapsed / hour) + "hours ago";
+    }
+    return Math.ceil(timeElapsed / day) + "days ago";
+}
+
 const params = new URLSearchParams(window.location.search);
 if(params.has("postid")) {
     postID = params.get("postid");
@@ -279,3 +294,41 @@ fetch("/comments/children/" + postID, {method:"GET"})
         for(const comment of data) AddCommentToList(comment);
     }
 });
+
+function CreateComment() {
+
+    const dummyComment = {
+        "parentComment": "",
+        "childrenComments": [],
+        "deleted": false,
+        "upvotes": 0,
+        "upvoteOwners": [],
+        "downvotes": 1,
+        "downvoteOwners": [
+            "mister"
+        ],
+        "votes": -1,
+        "_id": "606d5384ee2e9b3824ddc26a",
+        "owner": "test_owner2",
+        "parentPost": "606b03f380cdc95a10d3bef0",
+        "content": "Hey!",
+        "__v": 63
+    }
+
+
+    const content = document.getElementById("comment_editor_textarea").value;
+    fetch("/comments", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ owner: "test_owner2", content: content, parentPost: postID })
+    })
+	.then( function() {
+        document.getElementById("comment_editor_textarea").value = "";
+		alert('Comment creation success!');
+        AddCommentToList(dummyComment);
+		//window.location.href = "main.html";
+	}) 
+	.catch(err => console.log(err));
+}
