@@ -200,7 +200,11 @@ router.patch('/posts/:id', authentication, async (req, res) => {
  *       "action": "upvote" (this can be "upvote", "downvote", or "cancel")
  *   }
  */
-router.patch('/posts/vote/:id',authentication, async (req, res) => {
+ router.patch('/posts/vote/:id', async (req, res) => {
+//router.patch('/posts/vote/:id',authentication, async (req, res) => {
+    //DEBUG
+    console.log("voted!!");
+    console.log(req.body);
     const {owner, action} = req.body;
 
     try {
@@ -271,7 +275,12 @@ router.patch('/posts/vote/:id',authentication, async (req, res) => {
                 }
             }
         }
-        else return res.status(400).send({ error: "Invalid action. (Use cancel, upvote, or downvote)" });
+        else {
+            //DEBUG
+            console.log("owner", action);
+            console.log("action", owner);
+            return res.status(400).send({ error: "Invalid action. (Use cancel, upvote, or downvote)" }); 
+        }
     } catch(error) {
         return res.status(500).send(error);
     }
@@ -303,7 +312,22 @@ router.get('/lists/:list', async (req, res) => {
         default:
             return res.status(400).send({error: "Please use status, category, and topic."});
     }
-    res.status(500).send();
+});
+
+//find owner
+router.get('/posts/findVoteOwner/:id', async (req, res) => {
+    const owner = req.body.owner;
+    try {
+        const post = await PostModel.findById(req.params.id);
+        if(!post) {
+            return res.status(404).send();
+        }
+        if(post.upvoteOwners.includes(owner)) return res.send({status: "upvote"});
+        if(post.downvoteOwners.includes(owner)) return res.send({status:"downvote"});
+        return res.send({status:"none"});
+    } catch(error) {
+        res.status(500).send(error);
+    }
 });
 
 module.exports = router;

@@ -10,16 +10,30 @@
 		div {height: 100%; margin: 0 auto;} /* margin: 0 auto is for centering */
 		p {display: inline-block; margin: 0.2em;}
 		a,input,select {line-height: 100%; margin-left: 0.5em;}
-		
-		button {border: 1px solid blue; border-radius: 0.5em; background-color: #def; transition: background 0.2s;}
-		button:hover {background-color: #8cf;}
-		button:active {background-color: #88f;}
-		
+			
 		.avatar {position: absolute; top: 0.5em; right: 0.5em; height: 2.5rem; width: 2.5rem; cursor: pointer; z-index: 1000;}
 		.sidebar { background-color: #fff; position: absolute; top: 0px; right: 0px; min-height: 100vh; white-space: nowrap; z-index: 999; transition: width 1s; width: 0px;}
-		.sidebar-visible { width: 200px;}
+		.sidebar-visible {width: 200px;}
+		.vote_button {background-color: transparent; border: transparent;}
 		
-		#content {border: 0.25em solid #adf; padding: 0.5em;}
+		#contentbox {border: 0.25em solid #adf; padding: 0.5em; height: auto;}
+		#content{
+			border: 1px solid #000;
+			margin-left: 50px;
+		}
+		#vote {
+			float: left;
+			display: flex;
+			flex-direction: column;
+			width: 40px;
+			height: 100%;
+			align-items: center;
+			border: 1px solid #000;
+		}
+		#vote_count {padding: 0px; line-height: 20px}
+		#upvote_button {background-image: url(./img/up_inactive.png); background-repeat: no-repeat; background-position: center; height: 20px; width: 20px;}
+		#downvote_button {background-image: url(./img/down_inactive.png); background-repeat: no-repeat; background-position: center; height: 20px; width: 20px;}
+		
 	</style>
 </head>
 <body>
@@ -34,22 +48,51 @@
 	</div>
 	<hr style="margin: 0;"/>
 	<div style="padding: 0.5em 1em;">
-		<span id="title">Title</span>, owned by <span id="owner">Owner</span>
-		<div id="content">Content</div>
-		Upvote: <span id="upvote">0</span>, Downvote: <span id="downvote">0</span><br/>
+		<div id="contentbox">
+			<div id="vote">
+				<button class="vote_button" id="upvote_button" onclick="upvote()"></button>
+				<div id="vote_count">VoteCount</div>
+				<button class="vote_button" id="downvote_button" onclick="downvote()"></button>
+			</div>
+			<div id="content">
+				<div id="owner">Owner</div>
+				<div id="title">Title</div>
+				<div id="text">Content</div>
+			</div>
+		</div>
 	</div>
 	<script>
+		var postID;
+		var voteStatus;
+
 		const params = new URLSearchParams(window.location.search);
-		if(params.has("postid"))fetch("/posts/"+params.get("postid"),{method:"GET"})
+		if(params.has("postid")) fetch("/posts/"+params.get("postid"),{method:"GET"})
 		.then(res=>res.json())
 		.then(data=>{
 			document.getElementById("title").innerHTML=data.title;
-			document.getElementById("owner").innerHTML=data.owner;
-			document.getElementById("content").innerHTML=data.content;
-			document.getElementById("upvote").innerHTML=data.upvote;
-			document.getElementById("downvote").innerHTML=data.downvote;
+			document.getElementById("owner").innerHTML= "Posted by " + data.owner;
+			document.getElementById("text").innerHTML=data.content;
+			document.getElementById("vote_count").innerHTML=data.votes;
+			postID = data._id;
 		})
 		.catch(err=>document.getElementById("content").innerHTML="Unable to fetch post :(<br/>"+err);
+
+		fetch("/posts/findVoteOwner/" + params.get("postid"),{method:"GET"})
+		.then(res => res.json())
+		.then(data => {
+			voteStatus = data.status;
+		});
+
+		function upvote() {
+				console.log("voting!");
+				fetch("/posts/vote/" + postID, 
+				{
+					method:"PATCH", 
+					headers: {"Content-Type": "application/json"},
+					body: JSON.stringify({action:"upvote", owner:"test_owner2"})
+				}
+			);
+		}
 	</script>
 </body>
 </html>
