@@ -8,75 +8,9 @@ button {border: 1px solid blue; border-radius: 0.5em; background-color: #def; tr
 button:hover {background-color: #8cf;}
 button:active {background-color: #88f;}
 
-.logoutbutton{
-    height: 20px;
-    position: absolute;
-    width: 100%;
-    bottom: 15px;
-    border: 1.5px solid red;
-    border-radius: 1em;
-    padding-bottom: 2em
-    }
-                
-.tomainbutton{
-    height: 20px;
-    position: absolute;
-    width: 100%;
-    bottom: 105px;
-    border: 1.5px solid yellowgreen;
-    border-radius: 1em;
-    padding-bottom: 2em
-    }
-                
- .profilebutton{
-    height: 20px;
-    position: absolute;
-    width: 100%;
-    bottom: 60px;
-    border: 1.5px solid orange;
-    border-radius: 1em;
-    padding-bottom: 2em
- }
-		
-.useravatar {position: absolute; top: 0.5em; right: 0.5em; height: 3.5rem; width: 3.5rem; transition: all 1s ease; cursor: pointer; z-index: 1000;}
-.useravatar-visible {right: 210px;}
-.sidebar { background-color: #eee; overflow: hidden; position: absolute; top: 0px; right: 0px; min-height: 100vh; white-space: nowrap; z-index: 999; transition: width 1s; width: 0px;}
+.avatar {position: absolute; top: 0.5em; right: 0.5em; height: 2.5rem; width: 2.5rem; cursor: pointer; z-index: 1000;}
+.sidebar { background-color: #fff; position: absolute; top: 0px; right: 0px; min-height: 100vh; white-space: nowrap; z-index: 999; transition: width 1s; width: 0px;}
 .sidebar-visible { width: 200px;}
-.sidebar p{
-    padding: 5px 5px 5px 5px;
-    text-align: center;
-    font-size: 17px;
-    color: #88f;
-    display: block;
-    transition: 0.2s;
-}
-.sidebar p:hover{
-    color: #adf;
-}
-                
-.sidebar .sidebar-email{
-    padding-top: 0;
-    font-size: 13px;
-    text-align: center;
-    color: #000;
-    transition: 0.2s;
- }
-                
-.sidebar-avatar{
-    margin-top: 25px;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    width: 50%;
-    height: 12rem;
-    width: 12rem;
-    transition: 0.2s;
-}
-                
-.sidebar h3{
-    text-align: center;
-    font-weight: bold;
-}
 
 /* for main.html */
 #posts {background-color: #cef; padding: 0.2em 0;}

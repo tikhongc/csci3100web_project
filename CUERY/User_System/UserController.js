@@ -1,7 +1,6 @@
 //file to store and manipulate user data and output a router
 
 require('../mongodb/mongoose');
-const fs = require('fs');
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const UserModel = require('./UserModel');
@@ -28,9 +27,6 @@ function validateEmail(email) {
         password: req.body.newPassword,
         year: req.body.year,
     });
-    newUser.avatar.data = fs.readFileSync("./CUERY/public/img/avatar.png");
-    newUser.avatar.contentType = "image/png";
-    
     if (!validateEmail(req.body.newEmail))
         res.redirect('/registration.html?invalid=2');
     else{
