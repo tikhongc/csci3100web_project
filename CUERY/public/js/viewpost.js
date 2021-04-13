@@ -31,6 +31,7 @@ if(params.has("postid")) {
     })
     .catch(err=>document.getElementById("content").innerHTML="Unable to fetch post :(<br/>"+err);
 }
+
 //finding out the voteStatus for the post
 fetch("/posts/findVoteOwner/" + postID + "?owner=" + "test_owner2", {method:"GET"})
 .then(res => res.json())
@@ -94,7 +95,6 @@ async function upvote(target) {
         );
     }
 }
-
         {
             method:"PATCH", 
 async function downvote(target) {

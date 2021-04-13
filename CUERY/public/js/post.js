@@ -21,7 +21,6 @@ function getCookie(cname) {
   }
   
   var userCookie = getCookie("x-access-token");
-  console.log(userCookie);
   
   const options = {
 	  method: 'POST',
@@ -46,9 +45,32 @@ function getCookie(cname) {
 		  document.getElementById("sidebar-avatar").src = "data:image/png;base64," + data.avatar.data;
 		  document.getElementById("sidebar-username").innerHTML = data.name;
 		  document.getElementById("sidebar-email").innerHTML = "(" + data.email + ")";
-		  document.getElementById("sidebar-year").innerHTML = "Year: " + data.year;
-		  
-		  
+		  document.getElementById("sidebar-year").innerHTML = "Year: " + data.year;	
+
+		  const options2 = {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({data})
+		};
+		console.log(data._id);
+		fetch("/user/posts/"+data._id,{options2})
+		.then(res=>res.json())
+		.then(data=>{
+			let counter = 0;
+			for (let i = 0; i < data.length; i++) 
+			counter++;
+			document.getElementById("sidebar-postnum").innerHTML = "Total Posts: " + counter;	
+		})	  
+		fetch("/user/comments/"+data._id,{options2})
+		.then(res=>res.json())
+		.then(data=>{
+			let counter = 0;
+			for (let i = 0; i < data.length; i++) 
+			counter++;
+			document.getElementById("sidebar-comtnum").innerHTML = "Total Comments: " + counter;	
+		})	 
 		  /*
 		  // fetch topics and categories
 	  fetch("/lists/topic",{method:"GET"})
@@ -79,7 +101,34 @@ function getCookie(cname) {
 	  }
   });
   }
-		  
+
+  function Post_profile() {
+	fetch('/checkCookie', options).then(res=>res.json())
+	.then(data=>{
+		if (data.answer === 'NA'){
+			alert("Please login first : )");
+			window.location.href = "login.html";
+		}
+		else{   
+			const options2 = {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({data})
+			};
+			console.log(data._id);
+			fetch("/user/posts/"+data._id,{options2})
+			.then(res=>res.json())
+			.then(data=>{
+			   document.getElementById("posts").innerHTML="";
+			   for(const post of data)AddPost(post);
+			})
+		}
+	});
+ }
+
+
   function toTitleCase(str) {
 	  var arr=str.split(" "),i=0;
 	  for(const word of arr)arr[i++]=word[0].toUpperCase()+word.slice(1,word.length);
@@ -183,6 +232,10 @@ function getCookie(cname) {
   function toMain(){
 	  window.location.href = "main.html";
   }
+
+  function toPost(){
+	window.location.href = "post-profile.html";
+  }
 		  
   function toggleSidebar(){
 	  document.getElementById('sidebar').classList.toggle('sidebar-visible'); 
@@ -212,6 +265,7 @@ function getCookie(cname) {
 	  })
 	  .catch(err=>console.log(err));
   }
+
   function FetchLists() { // fetch topics and categories
 	  fetch("/lists/topic",{method:"GET"})
 	  .then(res=>res.json())
@@ -223,7 +277,7 @@ function getCookie(cname) {
 			  option.innerHTML=toTitleCase(topic);
 			  select.appendChild(option);
 		  }
-		  return fetch("/lists/category",{method:"GET"})})
+	  return fetch("/lists/category",{method:"GET"})})
 	  .then(res=>res.json())
 	  .then(data=>{
 		  var option,select=document.getElementById("category");
@@ -236,6 +290,7 @@ function getCookie(cname) {
 	  })
 	  .catch(err=>console.log("Error: unable to fetch information.\n",err));
   }
+
   function FetchHeader() {
 	  fetch("../header.html")
 	  .then(res=>res.text())

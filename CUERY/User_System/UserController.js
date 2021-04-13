@@ -10,6 +10,29 @@ const authentication=require('../User_System/method/authentication');
 const User = new express.Router();    
 
 
+const multer = require('multer');
+const path = require('path');
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, './CUERY/User_System/uploads');
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname + '-' + Date.now());
+    }
+});
+
+const fileFilter = (req, file, cb) => {
+    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png')
+        cb(null, true);
+    else
+        cb(null, false);
+}
+
+const upload = multer({ 
+    storage: storage,
+    fileFilter: fileFilter
+});
 
 // function to check unique email also
 function validateEmail(email) {
@@ -40,7 +63,7 @@ function validateEmail(email) {
             await newUser.save();//save user
             console.log("Created");
             WelcomeEmail(req.body.newEmail, req.body.username);     //send welcome email
-            //const token = await newUser.Token();        //generate a token for the saved user and send back both toke and user
+            const token = await newUser.Token();        //generate a token for the saved user and send back both toke and user
             res.redirect('/redirection.html');
            //res.send({newUser,token});
         }catch(error){
@@ -205,16 +228,20 @@ User.get('/profile', authentication, async (req, res) => {
 
 //fetch all posts creating by a user
 User.get('/user/posts/:id' , async(req,res)=>{
-    const object_id = req.params.id;
     try {
-        const user = await UserModel.findById(object_id)
+        const user = await UserModel.findById(req.params.id)
         if (!user) {
             res.status(404)
             return res.send('404 NOT FOUND'); 
         }
         await user.populate('Post').execPopulate();
-        res.status(200).send(user.Post);
-        
+        let counter = 0;
+        for (let i = 0; i < user.Post.length; i++) {
+        counter++;
+        }
+        const post = user.Post;
+        res.status(200).send(post);
+        //console.log(counter);
     } catch (e) {
         res.status(500).send();
     }

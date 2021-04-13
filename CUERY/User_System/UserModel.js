@@ -61,13 +61,13 @@ user._id=""+user._id;
 
 UserSchema .virtual('Post', {
     ref: 'Post',
-    localField: '_id',
+    localField: 'name',
     foreignField: 'owner'
 })
 
 UserSchema .virtual('Comment', {
     ref: 'Comment',
-    localField: '_id',
+    localField: 'name',
     foreignField: 'owner'
 })
 
