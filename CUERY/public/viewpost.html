@@ -8,18 +8,8 @@
 	<link rel="stylesheet" href="./css/post.css">
 </head>
 <body>
-	<div style="line-height: 100%; padding: 0.5em;">
-		<h1 class="d-inline-block mx-2">Cuery</h1>
-		<img src="we-don't-have-a-logo.jpg" alt="Cuery Logo"/>
-		<img src="avatar.jpg" class="avatar" onclick="document.getElementById('sidebar').classList.toggle('sidebar-visible');"/>
-	</div>
-	<div id="sidebar" class="sidebar">
-		Something here<br/>
-		Profile things probably
-	</div>
-
+	<div id="header"></div>
 	<hr style="margin: 0;"/>
-
 	<div style="padding: 0.5em 1em;">
 		<div id="contentbox">
 			<div id="vote">
@@ -41,8 +31,10 @@
 	</div>
 
 	<div id="comments"></div>
-
+	
+	<script src="./js/post.js"></script>
 	<script src="./js/viewpost.js"></script>
+	<script>FetchHeader();</script>
 
 </body>
 </html>

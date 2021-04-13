@@ -9,6 +9,8 @@ const {WelcomeEmail, RecoveryEmail,ConfirmationEmail} = require('../User_System/
 const authentication=require('../User_System/method/authentication');
 const User = new express.Router();    
 
+
+
 // function to check unique email also
 function validateEmail(email) {
     const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
