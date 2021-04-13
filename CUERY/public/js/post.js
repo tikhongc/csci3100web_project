@@ -127,6 +127,8 @@ function getCookie(cname) {
 		}
 	});
  }
+ 
+
  function toTitleCase(str) {
 	var arr=str.split(" "),i=0;
 	for(const word of arr)arr[i++]=word[0].toUpperCase()+word.slice(1,word.length);
@@ -230,6 +232,11 @@ function toProfile(){
 function toMain(){
     window.location.href = "main.html";
 }
+
+function toPost(){
+	window.location.href = "post-profile.html";
+  }
+
         
 function toggleSidebar(){
     document.getElementById('sidebar').classList.toggle('sidebar-visible'); 
