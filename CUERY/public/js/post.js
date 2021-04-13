@@ -63,14 +63,6 @@ function getCookie(cname) {
 			counter++;
 			document.getElementById("sidebar-postnum").innerHTML = "Total Posts: " + counter;	
 		})	  
-		fetch("/user/comments/"+data._id,{options2})
-		.then(res=>res.json())
-		.then(data=>{
-			let counter = 0;
-			for (let i = 0; i < data.length; i++) 
-			counter++;
-			document.getElementById("sidebar-comtnum").innerHTML = "Total Comments: " + counter;	
-		})	 
 		  /*
 		  // fetch topics and categories
 	  fetch("/lists/topic",{method:"GET"})
