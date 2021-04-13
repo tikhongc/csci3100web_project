@@ -5,7 +5,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1"/>
 	<title>Cuery</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
-	<style>
+	<link rel="stylesheet" href="/css/post.css">
+        <style>
 		body {line-height: 200%; background-color: #8cf;}
 		div {margin: 0 auto;} /* margin: 0 auto is for centering */
 		p {display: block; margin: 0;}
@@ -14,20 +15,55 @@
 		button {border: 1px solid blue; border-radius: 0.5em; background-color: #def; transition: background 0.2s;}
 		button:hover {background-color: #8cf;}
 		button:active {background-color: #88f;}
+                
+                .typesmth {
+                    color: #88f;
+                }
 	</style>
 </head>
 <body>
+    <div id="header"></div>
+    <hr style="margin: 0;"/>
 	<div style="max-width: 800px;">
 		<div style="background-color: #eee; width: 90%;">
-			<div style="padding: 5%;">
-				<h1 id="username">Username</h1>
-				<img src="foo" alt="placeholder-image"></img>
+			<div id="content" style="padding: 5%;">
+				<h1 id="profilename" class="profilename">Name</h1>
+				<img id="userpropic" class="propic" src="" alt="placeholder-image"/>
 				<p>Email: <span id="email">placeholder-email</span></p>
 				<p>Year: <span id="year">placeholder-year</span></p>
 				<p>Password: <span id="password">********</span></p>
-				<p>Bio: <p id="bio" style="padding: 1%;">Something Something Bio</p></p>
+                                <div> bio:
+                                    <p id="bio" style="padding: 1%;">Something Something Bio</p>
+                                </div>
 			</div>
 		</div>
 	</div>
+        <script src="./js/post.js"></script>
+        
+	<script>
+                FetchHeader();
+                userAuthentication(); 
+                console.log("hello user");
+		fetch("/profile",{method:"GET"})
+		.then(res=>res.json())
+		.then(data=>{
+			document.getElementById("profilename").innerHTML=data.name;
+			document.getElementById("email").innerHTML=data.email;
+			document.getElementById("year").innerHTML=data.year;
+                        console.log(data.bio);
+                        if (data.bio === undefined){
+                            document.getElementById("bio").innerHTML = "(type something!!)";
+                            document.getElementById("bio").style="padding: 2%; color:gray;";
+                        }
+                        else{
+                            document.getElementById("bio").innerHTML=data.bio;
+                        }
+                        
+                        document.getElementById("userpropic").src = "data:image/png;base64," + data.avatar.data;
+			userID = data._id;
+		})
+		.catch(err=>document.getElementById("content").innerHTML="Unable to fetch user :(<br/>"+err);
+	</script>
+        
 </body>
 </html>

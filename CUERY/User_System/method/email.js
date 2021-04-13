@@ -2,8 +2,7 @@
 //using send grid to send email //https://app.sendgrid.com/guide
 
 const Mail = require('@sendgrid/mail');
-const APIkey='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';
-Mail.setApiKey(APIkey);
+Mail.setApiKey(process.env.APIkey);
 
 // types of email 
 
@@ -14,7 +13,7 @@ Mail.setApiKey(APIkey);
 const WelcomeEmail = (email, name) => {
     Mail.send({
         to: email,
-        from: '1205542199@qq.com',
+        from: 'chiutikhong@yandex.com',
         subject: 'Thanks for joining in Cuery community!',
         text: `Welcome to the Cuery, ${name}. +introduction`,
         html: '<strong>and easy to do anywhere, even with Node.js</strong>'
@@ -28,8 +27,8 @@ const WelcomeEmail = (email, name) => {
 
 const RecoveryEmail = (email,name,link) => {
     Mail.send({
-        to: email,
-        from: '1205542199@qq.com',
+        to: '1205542199@qq.com',
+        from: 'chiutikhong@yandex.com',
         subject: 'Account Activation Link',
         text:`Hi ${name}!\n 
         Please click on the following link ${link} to reset your password. \n
@@ -45,7 +44,7 @@ const RecoveryEmail = (email,name,link) => {
 const ConfirmationEmail = (email,name) => {
   Mail.send({
       to: email,
-      from: '1205542199@qq.com',
+      from: 'chiutikhong@yandex.com',
       subject: "Your password has been changed",
       text: `Hi ${name} \n 
       This is a confirmation that the password for your account ${email} has just been changed.\n`

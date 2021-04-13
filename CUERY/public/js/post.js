@@ -30,20 +30,27 @@ const options = {
     },
     body: JSON.stringify({userCookie})
 };
-
+        
 var user;
 // check the user's cookie before loading information
+function userAuthentication() {
 fetch('/checkCookie', options).then(res=>res.json())
 .then(data=>{
     if (data.answer === 'NA'){
-        alert("Please login first before viewing the posts : )");
+        alert("Please login first : )");
         window.location.href = "login.html";
     }
     else{   // continue loading if user are verified,  can use the user object received in the response
-        user = data;
-        console.log(user); // user information
+        console.log(data);
+        document.getElementById("useravatar").src = "data:image/png;base64," + data.avatar.data;
+        document.getElementById("sidebar-avatar").src = "data:image/png;base64," + data.avatar.data;
+        document.getElementById("sidebar-username").innerHTML = data.name;
+        document.getElementById("sidebar-email").innerHTML = "(" + data.email + ")";
+        document.getElementById("sidebar-year").innerHTML = "Year: " + data.year;
         
-	// fetch topics and categories
+        
+        /*
+        // fetch topics and categories
 	fetch("/lists/topic",{method:"GET"})
 	.then(res=>res.json())
 	.then(data=>{
@@ -66,12 +73,13 @@ fetch('/checkCookie', options).then(res=>res.json())
 		}
 	})
 	.catch(err=>console.log("Error: unable to fetch information.\n",err));
-
+        
 	ReloadPosts();
+        */
     }
 });
-
-
+}
+        
 function toTitleCase(str) {
 	var arr=str.split(" "),i=0;
 	for(const word of arr)arr[i++]=word[0].toUpperCase()+word.slice(1,word.length);
@@ -167,4 +175,70 @@ function Logout(){
         console.log(err);
     });
 }
-		
+
+function toProfile(){
+    window.location.href = "user.html";
+}
+
+function toMain(){
+    window.location.href = "main.html";
+}
+        
+function toggleSidebar(){
+    document.getElementById('sidebar').classList.toggle('sidebar-visible'); 
+    document.getElementById('useravatar').classList.toggle('useravatar-visible');
+}
+
+function CreatePost() {
+	var data = {
+		title:document.getElementById("title").value,
+		category:document.getElementById("category").value,
+		topic:document.getElementById("topic").value,
+		content:document.getElementById("content").value
+	};
+		const options = {
+        method: 'POST',
+            headers: 
+			{
+                'Content-Type': 'application/json'
+            },
+            body:JSON.stringify(data)
+        };
+	fetch("/posts",options)
+	//.then(res=>res.json())
+	.then(res=>{
+		alert('Post creation success !');
+		window.location.href = "main.html";
+	})
+	.catch(err=>console.log(err));
+}
+function FetchLists() { // fetch topics and categories
+	fetch("/lists/topic",{method:"GET"})
+	.then(res=>res.json())
+	.then(data=>{
+		var option,select=document.getElementById("topic");
+		for(const topic of data){
+			option=document.createElement("option");
+			option.value=topic;
+			option.innerHTML=toTitleCase(topic);
+			select.appendChild(option);
+		}
+		return fetch("/lists/category",{method:"GET"})})
+	.then(res=>res.json())
+	.then(data=>{
+		var option,select=document.getElementById("category");
+		for(const category of data){
+			option=document.createElement("option");
+			option.value=category;
+			option.innerHTML=toTitleCase(category);
+			select.appendChild(option);
+		}
+	})
+	.catch(err=>console.log("Error: unable to fetch information.\n",err));
+}
+function FetchHeader() {
+	fetch("../header.html")
+	.then(res=>res.text())
+	.then(txt=>document.getElementById("header").innerHTML=txt)
+	.catch(err=>console.log("Unable to fetch header.\n",err));
+}

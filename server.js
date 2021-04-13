@@ -10,7 +10,7 @@ const bodyParser = require('body-parser');
 const port = process.env.PORT || 3000;// nodemon server.js
 var cookieParser = require('cookie-parser')
 
-
+app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser())
 app.use(express.static('./CUERY/public'));

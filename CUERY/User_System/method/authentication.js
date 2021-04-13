@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');//https://www.npmjs.com/package/jsonwebtoken
 const usermodel = require('../../User_System/UserModel');
-var cookieParser = require('cookie-parser');
+
 
 const authenticationToken = async (req, res, next) => {
     try {
