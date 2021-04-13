@@ -95,50 +95,8 @@ async function upvote(target) {
     }
 }
 
-//async function downvote(target) {
-    /* if(voteStatus === "none") {
-        document.getElementById("vote_count").innerHTML = (parseInt(document.getElementById("vote_count").innerHTML) - 1).toString();
-        voteStatus = "downvote";
-        updateStatus();
-        await fetch("/posts/vote/" + postID, 
         {
             method:"PATCH", 
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({action:"downvote", owner:"test_owner2"})
-        });
-    }
-    else if (voteStatus === "upvote") {
-        document.getElementById("vote_count").innerHTML = (parseInt(document.getElementById("vote_count").innerHTML) - 2).toString();
-        voteStatus = "downvote";
-        updateStatus();
-        await fetch("/posts/vote/" + postID, 
-        {
-            method:"PATCH", 
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({action:"cancel", owner:"test_owner2"})
-        });
-        await fetch("/posts/vote/" + postID, 
-        {
-            method:"PATCH", 
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({action:"downvote", owner:"test_owner2"})
-        });
-    }
-    else {
-        document.getElementById("vote_count").innerHTML = (parseInt(document.getElementById("vote_count").innerHTML) + 1).toString();
-        voteStatus = "none";
-        updateStatus();
-        
-        await fetch("/posts/vote/" + postID, 
-            {
-                method:"PATCH", 
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({-action:"cancel", owner:"test_owner2"})
-            }
-        );
-    } */
-//}
-
 async function downvote(target) {
     var url;
 
@@ -253,7 +211,8 @@ function AddCommentToList(data) {
 
     //voteCount
     var voteCount = document.createElement("div");
-    voteCount.innerHTML = data.votes;
+    if(data.votes) voteCount.innerHTML = data.votes;
+    else voteCount.innerHTML = "0";
     voteCount.style.width = "3em";
     voteCount.style.lineHeight = "20px";
     voteCount.style.textAlign = "center";
@@ -297,38 +256,23 @@ fetch("/comments/children/" + postID, {method:"GET"})
 
 function CreateComment() {
 
-    const dummyComment = {
-        "parentComment": "",
-        "childrenComments": [],
-        "deleted": false,
-        "upvotes": 0,
-        "upvoteOwners": [],
-        "downvotes": 1,
-        "downvoteOwners": [
-            "mister"
-        ],
-        "votes": -1,
-        "_id": "606d5384ee2e9b3824ddc26a",
-        "owner": "test_owner2",
-        "parentPost": "606b03f380cdc95a10d3bef0",
-        "content": "Hey!",
-        "__v": 63
-    }
+    const comment = {
+        owner: "bitchass",
+        content: document.getElementById("comment_editor_textarea").value,
+        parentPost: postID,
+        parentComment: ""
+    };
 
-
-    const content = document.getElementById("comment_editor_textarea").value;
     fetch("/comments", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({content: content, parentPost: postID })
-
+        body: JSON.stringify(content)
     })
 	.then( function() {
         document.getElementById("comment_editor_textarea").value = "";
-		alert('Comment creation success!');
-        AddCommentToList(dummyComment);
+        AddCommentToList(comment);
 		//window.location.href = "main.html";
 	}) 
 	.catch(err => console.log(err));

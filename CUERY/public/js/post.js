@@ -194,7 +194,7 @@ function CreatePost() {
 		title:document.getElementById("title").value,
 		category:document.getElementById("category").value,
 		topic:document.getElementById("topic").value,
-		content:document.getElementById("content").value
+		content:document.getElementById("newcontent").value
 	};
 		const options = {
         method: 'POST',
