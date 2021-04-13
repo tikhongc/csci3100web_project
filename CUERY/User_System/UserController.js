@@ -8,7 +8,6 @@ const UserModel = require('./UserModel');
 const {WelcomeEmail, RecoveryEmail,ConfirmationEmail} = require('../User_System/method/email');
 const authentication=require('../User_System/method/authentication');
 const User = new express.Router();    
-const fs = require('fs');
 
 // function to check unique email also
 function validateEmail(email) {

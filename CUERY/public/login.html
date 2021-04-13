@@ -36,6 +36,7 @@
 					<br/>
 					<button id="login" type="submit" style="min-width: 25%;">Login</button>
 					<span id="redirect" style="margin-left: 1em;" onclick="redirect();">New user?</span>
+					<span id="redirect" style="margin-left: 1em;" onclick="redirect2();">Forgot password?</span>
 				</form>
 			</div>
 		</div>
@@ -55,6 +56,7 @@
                 
         function redirect() {window.location.href = "registration.html";}
                 
+		function redirect2() {window.location.href = "forgot.html";}
         function userLogin() {
             let email = document.getElementById("email").value;
             let password = document.getElementById("password").value;
