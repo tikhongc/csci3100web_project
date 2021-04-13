@@ -26,7 +26,7 @@ button:active {background-color: #88f;}
     border: 1.5px solid yellowgreen;
     border-radius: 1em;
     padding-bottom: 2em
-    }
+}
                 
  .profilebutton{
     height: 20px;
@@ -105,6 +105,7 @@ button:active {background-color: #88f;}
 	border: 0.25em solid #adf;
 	border-radius: 0.5em;
 	margin: 0 auto;
+    margin-bottom: 1em;
 	width: 700px;
 	padding: 0.5em;
 	overflow: auto;
@@ -148,7 +149,7 @@ button:active {background-color: #88f;}
 	line-height: 1.5em;
 	background-color: rgb(196, 229, 252);
 	resize: none;
-	border: 1px solid rgb(94, 119, 136);
+	border: transparent;
 	border-radius: 5px;
 }
 #comments {
@@ -168,4 +169,41 @@ button:active {background-color: #88f;}
   height: 20rem;
   width: 20rem;
 }
+
+.updatediv {
+  text-align: center;  
+}
+
+.updatebutton{
+    height: 20px;
+    position: relative;
+    width: 40%;
+    border: 2px solid pink;
+    border-radius: 1em;
+    padding-bottom: 2em;
+    margin-bottom: 30px;
+}
+
+.updatesubmitbutton{
+    height: 20px;
+    position: relative;
+    width: 25%;
+    border: 2px solid brown;
+    border-radius: 1em;
+    padding-bottom: 2em;
+    margin-bottom: 30px;
+}
+
+.updatesubmitdiv{
+    text-align: center; 
+}
+
+div .reminder{
+    color: red;
+    font-size: 12px;
+    line-height: 70%;
+    margin-top: 0;
+    padding-bottom: 1.5em;
+}
+
 

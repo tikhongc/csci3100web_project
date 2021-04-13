@@ -2,13 +2,13 @@
 
 require('../mongodb/mongoose');
 const fs = require('fs');
+const objectid = require('mongodb').ObjectID;
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const UserModel = require('./UserModel');
 const {WelcomeEmail, RecoveryEmail,ConfirmationEmail} = require('../User_System/method/email');
 const authentication=require('../User_System/method/authentication');
-const User = new express.Router();    
-
+const User = new express.Router(); 
 
 const multer = require('multer');
 const path = require('path');
@@ -57,13 +57,13 @@ function validateEmail(email) {
     newUser.avatar.contentType = "image/png";
     
     if (!validateEmail(req.body.newEmail))
-        res.redirect('/registration.html?invalid=2');
+        return res.redirect('/registration.html?invalid=2');
     else{
         try{
             await newUser.save();//save user
             console.log("Created");
             WelcomeEmail(req.body.newEmail, req.body.username);     //send welcome email
-            const token = await newUser.Token();        //generate a token for the saved user and send back both toke and user
+            //const token = await newUser.Token();        //generate a token for the saved user and send back both toke and user
             res.redirect('/redirection.html');
            //res.send({newUser,token});
         }catch(error){
@@ -72,7 +72,6 @@ function validateEmail(email) {
         }
     }
     })
-
 
  //for user to log in 
  User.post('/login',async(req,res)=>{
@@ -144,8 +143,8 @@ User.post("/forgot", [
          } 
 
        await user.ResetPassword();
-       let link = "http://" + req.headers.host + "/reset/" + user.resetPasswordToken;
-       console.log(link);
+       let link = "http://" + req.headers.host + "/api/recovery/reset/" + user.resetPasswordToken;
+       console.log(user.resetPasswordToken);
        RecoveryEmail(user.email,user.name,link);
        res.status(200).send('Account activation email has been sent,please check your mailbox.');
     }
@@ -155,24 +154,23 @@ User.post("/forgot", [
 });
 
 //get passwordReset
-User.get('/reset/:token',async (req, res,next) => {
+User.get('/reset/:token',async (req, res) => {
     try{
         const user = await UserModel.findOne({resetPasswordToken: req.params.token, resetPasswordExpires: {$gt: Date.now()}});
         if (!user) {
-            req.flash('error', 'Password reset token is invalid or has expired.');
-            return res.redirect('/forgot.html');
+            return res.status(401).json({message: 'Password reset token is invalid or has expired.'});
          } 
-         res.render('reset',{token: req.params.token});
+            res.send(user);
     }
     catch(error){
         res.status(400).send(error);
     }
 })
 
-
 //Reset password
 User.post('/reset/:token',[
     check('password').not().isEmpty().isLength({min: 8}).withMessage('Must be at least 8 chars long'),
+    check('confirmPassword', 'Passwords do not match').custom((value, {req}) => (value === req.body.password)),
   ],validator,
   async (req, res) => {
     try{
@@ -181,17 +179,13 @@ User.post('/reset/:token',[
             return res.status(401).json({message: 'Password reset token is invalid or has expired.'});
          } 
          //Set the new password
-         if(req.body.password === req.body.confirm){
          user.password = req.body.password;         
          user.resetPasswordToken = undefined;
          user.resetPasswordExpires = undefined;
+
          await user.save();
          ConfirmationEmail(user.email,user.name);
          res.status(200).json({message: 'Your password has been updated.'});
-         }
-         else{
-            return req.flash("error", "Passwords do not match.");
-         }
     }
     catch(error){
         res.status(500).json({message: error.message});
@@ -213,35 +207,34 @@ User.get('/profile', authentication, async (req, res) => {
     res.send(req.user);
 })
 
+
  //fetch a user by id
- User.get('/users/:id',authentication,async(req,res)=>{
-    try {
-        const user = await UserModel.findById(req.params.id);
-        if(!user) {
-            return res.status(404).send();
-        }
-        res.send(user);
-    } catch(error) {
-        res.status(500).send(error);
-    }
+ User.get('/search/:id',(req,res)=>{
+    const object_id = req.params.id;
+    UserModel.findById(object_id).then((user)=>{
+       if(!user){
+           res.status(404)
+           return res.send('404 NOT FOUND');
+       }
+       res.status(200).send(user);
+   }).catch((error)=>{
+      res.status(500);//bad request
+      res.send(error);
+   })
 })
 
 //fetch all posts creating by a user
 User.get('/user/posts/:id' , async(req,res)=>{
+    const object_id = req.params.id;
     try {
-        const user = await UserModel.findById(req.params.id)
+        const user = await UserModel.findById(object_id)
         if (!user) {
             res.status(404)
             return res.send('404 NOT FOUND'); 
         }
         await user.populate('Post').execPopulate();
-        let counter = 0;
-        for (let i = 0; i < user.Post.length; i++) {
-        counter++;
-        }
-        const post = user.Post;
-        res.status(200).send(post);
-        //console.log(counter);
+        res.status(200).send(user.Post);
+        
     } catch (e) {
         res.status(500).send();
     }
@@ -262,33 +255,6 @@ User.get('/user/comments/:id' , async(req,res)=>{
         res.status(500).send();
     }
 })
-
-// //update user by id
-// User.patch('/update',authentication,async(req,res)=>{
-//     //only allow to update the atrribute included in user model
-//     const up = Object.keys(req.body);
-//     const allowupdate=['name','password','year','email','bio','pre',''];//and 
-//     const valid = up.every((update)=>{
-//         return allowupdate.includes(update);
-//      })    
-//      if(!valid){
-//         res.status(400);
-//         return res.send('Invalid updates.')
-//     }
-//     //update code
-//     try{
-//         // allow to update many times
-//         up.forEach((update)=>{
-//          req.user[update]=req.body[update];
-//         })
-//         await req.user.save();
-//         res.status(200);
-//         res.send(req.user);
-//     }catch(error){
-//         res.status(400);//bad request
-//         res.send(error);
-//     }
-// })
 
 User.post('/update',authentication, upload.single('avatar'),async(req,res,next)=>{
     
@@ -345,6 +311,48 @@ User.post('/update',authentication, upload.single('avatar'),async(req,res,next)=
         res.redirect("user.html?success");
     })
 });
+/*
+//update user by id
+User.post('/update',authentication, upload.single('avatar'),async(req,res,next)=>{
+    //only allow to update the atrribute included in user model
+    console.log(req.user);
+    var updateuser = {
+        name: req.body.name,
+        email: req.body.email,
+        bio: req.body.bio,
+        password: req.body.password,
+        oldpw: req.body.oldpw,
+        year: req.body.year,
+        avatar:{
+            data: fs.readFileSync(path.join("./CUERY/User_System/uploads/" + req.file.filename)),
+            contentType: req.file.mimetype
+        }
+    }
+    
+    const up = Object.keys(obj);
+    const allowupdate=['name','password','year','email','bio','pre','avatar'];//and 
+    const valid = up.every((update)=>{
+        return allowupdate.includes(update);
+     })    
+     if(!valid){
+        res.status(400);
+        return res.send('Invalid updates.')
+    }
+    //update code
+    try{
+        // allow to update many times
+        up.forEach((update)=>{
+         req.user[update]=obj[update];
+        })
+        await req.user.save();
+        res.status(200);
+        res.send(req.user);
+    }catch(error){
+        res.status(400);//bad request
+        res.send(error);
+    }
+})
+*/
 
 //only server-side allowed management:
 

@@ -5,123 +5,81 @@
  */
 
 function getCookie(cname) {
-	var name = cname + "=";
-	var decodedCookie = decodeURIComponent(document.cookie);
-	var ca = decodedCookie.split(';');
-	for(var i = 0; i <ca.length; i++) {
-	  var c = ca[i];
-	  while (c.charAt(0) == ' ') {
-		c = c.substring(1);
-	  }
-	  if (c.indexOf(name) == 0) {
-		return c.substring(name.length, c.length);
-	  }
-	}
-	return "";
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i <ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
   }
-  
-  var userCookie = getCookie("x-access-token");
-  
-  const options = {
-	  method: 'POST',
-	  headers: {
-		  'Content-Type': 'application/json'
-	  },
-	  body: JSON.stringify({userCookie})
-  };
-		  
-  var user;
-  // check the user's cookie before loading information
-  function userAuthentication() {
-  fetch('/checkCookie', options).then(res=>res.json())
-  .then(data=>{
-	  if (data.answer === 'NA'){
-		  alert("Please login first : )");
-		  window.location.href = "login.html";
-	  }
-	  else{   // continue loading if user are verified,  can use the user object received in the response
-		  console.log(data);
-		  document.getElementById("useravatar").src = "data:image/png;base64," + data.avatar.data;
-		  document.getElementById("sidebar-avatar").src = "data:image/png;base64," + data.avatar.data;
-		  document.getElementById("sidebar-username").innerHTML = data.name;
-		  document.getElementById("sidebar-email").innerHTML = "(" + data.email + ")";
-		  document.getElementById("sidebar-year").innerHTML = "Year: " + data.year;	
+  return "";
+}
 
-		  const options2 = {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({data})
-		};
-		console.log(data._id);
-		fetch("/user/posts/"+data._id,{options2})
-		.then(res=>res.json())
-		.then(data=>{
-			let counter = 0;
-			for (let i = 0; i < data.length; i++) 
-			counter++;
-			document.getElementById("sidebar-postnum").innerHTML = "Total Posts: " + counter;	
-		})	  
-		  /*
-		  // fetch topics and categories
-	  fetch("/lists/topic",{method:"GET"})
-	  .then(res=>res.json())
-	  .then(data=>{
-		  var option,select=document.getElementById("topic");
-		  for(const topic of data){
-			  option=document.createElement("option");
-			  option.value=topic;
-			  option.innerHTML=toTitleCase(topic);
-			  select.appendChild(option);
-		  }
-		  return fetch("/lists/category",{method:"GET"});})
-	  .then(res=>res.json())
-	  .then(data=>{
-		  var option,select=document.getElementById("category");
-		  for(const category of data){
-			  option=document.createElement("option");
-			  option.value=category;
-			  option.innerHTML=toTitleCase(category);
-			  select.appendChild(option);
-		  }
-	  })
-	  .catch(err=>console.log("Error: unable to fetch information.\n",err));
-		  
-	  ReloadPosts();
-		  */
-	  }
-  });
-  }
+var userCookie = getCookie("x-access-token");
 
-  function Post_profile() {
-	fetch('/checkCookie', options).then(res=>res.json())
+const options = {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({userCookie})
+};
+        
+var user;
+// check the user's cookie before loading information
+function userAuthentication() {
+fetch('/checkCookie', options).then(res=>res.json())
+.then(data=>{
+    if (data.answer === 'NA'){
+        alert("Please login first : )");
+        window.location.href = "login.html";
+    }
+    else{   // continue loading if user are verified,  can use the user object received in the response
+        console.log(data);
+        document.getElementById("useravatar").src = "data:image/png;base64," + data.avatar.data;
+        document.getElementById("sidebar-avatar").src = "data:image/png;base64," + data.avatar.data;
+        document.getElementById("sidebar-username").innerHTML = data.name;
+        document.getElementById("sidebar-email").innerHTML = "(" + data.email + ")";
+        document.getElementById("sidebar-year").innerHTML = "Year: " + data.year;
+        
+        
+        /*
+        // fetch topics and categories
+	fetch("/lists/topic",{method:"GET"})
+	.then(res=>res.json())
 	.then(data=>{
-		if (data.answer === 'NA'){
-			alert("Please login first : )");
-			window.location.href = "login.html";
+		var option,select=document.getElementById("topic");
+		for(const topic of data){
+			option=document.createElement("option");
+			option.value=topic;
+			option.innerHTML=toTitleCase(topic);
+			select.appendChild(option);
 		}
-		else{   
-			const options2 = {
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({data})
-			};
-			console.log(data._id);
-			fetch("/user/posts/"+data._id,{options2})
-			.then(res=>res.json())
-			.then(data=>{
-			   document.getElementById("posts").innerHTML="";
-			   for(const post of data)AddPost(post);
-			})
+		return fetch("/lists/category",{method:"GET"});})
+	.then(res=>res.json())
+	.then(data=>{
+		var option,select=document.getElementById("category");
+		for(const category of data){
+			option=document.createElement("option");
+			option.value=category;
+			option.innerHTML=toTitleCase(category);
+			select.appendChild(option);
 		}
-	});
- }
- 
-
- function toTitleCase(str) {
+	})
+	.catch(err=>console.log("Error: unable to fetch information.\n",err));
+        
+	ReloadPosts();
+        */
+    }
+});
+}
+        
+function toTitleCase(str) {
 	var arr=str.split(" "),i=0;
 	for(const word of arr)arr[i++]=word[0].toUpperCase()+word.slice(1,word.length);
 	return arr.join(" ");
@@ -224,11 +182,6 @@ function toProfile(){
 function toMain(){
     window.location.href = "main.html";
 }
-
-function toPost(){
-	window.location.href = "post-profile.html";
-  }
-
         
 function toggleSidebar(){
     document.getElementById('sidebar').classList.toggle('sidebar-visible'); 
