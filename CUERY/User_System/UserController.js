@@ -1,6 +1,7 @@
 //file to store and manipulate user data and output a router
 
 require('../mongodb/mongoose');
+const fs = require('fs');
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const UserModel = require('./UserModel');

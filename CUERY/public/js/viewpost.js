@@ -323,6 +323,7 @@ function CreateComment() {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({content: content, parentPost: postID })
+
     })
 	.then( function() {
         document.getElementById("comment_editor_textarea").value = "";
