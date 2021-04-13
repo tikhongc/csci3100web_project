@@ -133,12 +133,17 @@ function updateStatus(target) {
 }
 
 //add one comment to list
-function AddCommentToList(data) {
+function AddCommentToList(data, indentation) {
+    var element;
+    
     //element
-    var element = document.createElement("div");
+    element = document.createElement("div");
     element.style.borderLeft = "3px solid rgba(0, 0, 0, .1)";
-    element.style.padding = "0.7em";
+    element.style.paddingLeft = "0.7em";
+    element.style.marginLeft = indentation + "em";
     element.style.overflow = "auto";
+    if(indentation === 0) element.style.marginBottom = "1em";
+    else element.style.marginTop = "0.7em";
 
     //owner
     var owner = document.createElement("div");
@@ -207,19 +212,96 @@ function AddCommentToList(data) {
         deleteButton.style.height = "2em";
         deleteButton.style.fontSize = "11px";
         deleteButton.style.lineHeight = "5px";
+        deleteButton.style.marginLeft = "1em";
         deleteButton.style.border = "transparent";
         deleteButton.setAttribute("id", "delete_button");
         deleteButton.setAttribute("onclick", "deletePostOrComment('" + data._id + "')");
         toolBox.appendChild(deleteButton);
     }
 
+    //display reply button
+    var replyButton = document.createElement("button");
+    replyButton.innerHTML = "reply";
+    replyButton.style.float = "right";
+    replyButton.style.height = "2em";
+    replyButton.style.fontSize = "11px";
+    replyButton.style.lineHeight = "5px";
+    replyButton.style.border = "transparent";
+    replyButton.setAttribute("id", "display_reply_button_" + data._id);
+    replyButton.setAttribute("onclick", "displayReply('" + data._id + "')");
+    toolBox.appendChild(replyButton);
+
+    //reply box
+    var replyBox = document.createElement("div");
+    replyBox.setAttribute("id", "reply_box_" + data._id);
+    replyBox.style.padding = "0";
+    replyBox.style.display = "none";
+    element.appendChild(replyBox);
+
+    //reply textarea
+    var replyTextarea = document.createElement("textarea");
+    replyTextarea.setAttribute("id", "reply_textarea_" + data._id);
+    replyTextarea.setAttribute("rows", "2");
+    replyTextarea.setAttribute("placeholder", "Write your comment here...");
+    replyTextarea.style.padding = "0.5em";
+    replyTextarea.style.lineHeight = "1.5em";
+    replyTextarea.style.float = "bottom";
+    replyTextarea.style.width = "100%";
+    replyTextarea.style.marginTop = "0.5em";
+    replyTextarea.style.marginBottom = "0.5em";
+    replyTextarea.style.resize = "none";
+    replyTextarea.style.display = "block";
+    replyTextarea.style.backgroundColor = "rgb(196, 229, 252)";
+    replyTextarea.style.border = "transparent";
+    replyTextarea.style.borderRadius = "0.5em";
+    replyBox.appendChild(replyTextarea);
+
+    //reply toolbox
+    var replyToolBox = document.createElement("div");
+    replyToolBox.style.width = "100%";
+    replyToolBox.style.overflow = "hidden";
+    replyBox.appendChild(replyToolBox);
+
+    //submit reply button
+    var submitReplyButton = document.createElement("button");
+    submitReplyButton.innerHTML = "reply";
+    submitReplyButton.style.float = "right";
+    submitReplyButton.style.height = "2em";
+    submitReplyButton.style.fontSize = "11px";
+    submitReplyButton.style.lineHeight = "5px";
+    submitReplyButton.style.border = "transparent";
+    submitReplyButton.setAttribute("id", "submit_reply_button");
+    submitReplyButton.setAttribute("onclick", "replyComment('" + data._id + "')");
+    replyToolBox.appendChild(submitReplyButton);
+
+    //children comments box
+    var childrenBox = document.createElement("div");
+    childrenBox.setAttribute("id", "children_box_" + data._id);
+    element.appendChild(childrenBox);
+
+    //populating children box
+    fetch("/comments/children/" + data._id, {method:"GET"})
+    .then(res => res.json())
+    .then(children => {
+        if(children.length) {
+            for(const comment of children) {
+                if(!comment.deleted) {
+                    childrenBox.appendChild(AddCommentToList(comment, 0.5));
+                }
+            };
+        }
+    });
+
+    //initializing vote buttons
     fetch("/comments/findVoteOwner/" + data._id + "?owner=" + username, {method:"GET"})
     .then(res => res.json())
     .then(result => {
         voteStatus[data._id] = result.status;
         updateStatus(data._id);
     });
-    document.getElementById("comments").appendChild(element);
+    //document.getElementById("comments").appendChild(element);
+
+    return element;
 }
 
 function createNewComment() {
@@ -260,6 +342,46 @@ function deletePostOrComment(target) {
     }).then((res) => console.log(res));
 }
 
+function displayReply(target) {
+    button = "display_reply_button_" + target;
+    target = "reply_box_" + target;
+
+    console.log(target);
+    if(document.getElementById(target).style.display === "none") {
+        document.getElementById(button).innerHTML = "close";
+        //document.getElementById(button).style.backgroundColor = "Red";
+        document.getElementById(target).style.display = "block";
+    }
+    else {
+        document.getElementById(button).innerHTML = "reply";
+        document.getElementById(target).style.display = "none";
+    }
+}
+
+function replyComment(target) {
+    const content = document.getElementById("reply_textarea_" + target).value;
+
+    const newComment = {
+        owner: username,
+        parentPost: postID,
+        parentComment: target,
+        content: content
+    }
+
+    fetch("/comments", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(newComment)
+    }).then(res => res.json())
+    .then(res => {
+        console.log(res.body);
+        document.getElementById("reply_textarea_" + target).value = ""
+        displayReply(target);
+    })
+}
+
 
 //getting all the data for the page
 //getting post data
@@ -277,7 +399,7 @@ if(params.has("postid")) {
         originalVoteCount = data.votes;
     })
     .then(() => {
-        //fetching username-
+        //fetching username
         fetch('/checkCookie', options).then(res => res.json())
         .then(data=> {
             if (data.answer === 'NA'){
@@ -312,7 +434,7 @@ if(params.has("postid")) {
                         document.getElementById("comments").innerHTML="";
                         for(const comment of data) {
                             if(!comment.deleted) {
-                                AddCommentToList(comment)
+                                document.getElementById("comments").appendChild(AddCommentToList(comment, 0));
                             }
                         };
                     }

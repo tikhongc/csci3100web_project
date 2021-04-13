@@ -105,6 +105,7 @@ button:active {background-color: #88f;}
 	border: 0.25em solid #adf;
 	border-radius: 0.5em;
 	margin: 0 auto;
+    margin-bottom: 1em;
 	width: 700px;
 	padding: 0.5em;
 	overflow: auto;
@@ -148,7 +149,7 @@ button:active {background-color: #88f;}
 	line-height: 1.5em;
 	background-color: rgb(196, 229, 252);
 	resize: none;
-	border: 1px solid rgb(94, 119, 136);
+	border: transparent;
 	border-radius: 5px;
 }
 #comments {
