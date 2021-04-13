@@ -7,7 +7,8 @@ const bcrypt = require('bcryptjs');
 const UserModel = require('./UserModel');
 const {WelcomeEmail, RecoveryEmail,ConfirmationEmail} = require('../User_System/method/email');
 const authentication=require('../User_System/method/authentication');
-const User = new express.Router();     
+const User = new express.Router();    
+const fs = require('fs');
 
 // function to check unique email also
 function validateEmail(email) {
@@ -48,7 +49,6 @@ function validateEmail(email) {
     }
     })
 
-var cookieParser = require('cookie-parser')
 
  //for user to log in 
  User.post('/login',async(req,res)=>{
@@ -120,8 +120,8 @@ User.post("/forgot", [
          } 
 
        await user.ResetPassword();
-       let link = "http://" + req.headers.host + "/api/recovery/reset/" + user.resetPasswordToken;
-       console.log(user.resetPasswordToken);
+       let link = "http://" + req.headers.host + "/reset/" + user.resetPasswordToken;
+       console.log(link);
        RecoveryEmail(user.email,user.name,link);
        res.status(200).send('Account activation email has been sent,please check your mailbox.');
     }
@@ -131,23 +131,24 @@ User.post("/forgot", [
 });
 
 //get passwordReset
-User.get('/reset/:token',async (req, res) => {
+User.get('/reset/:token',async (req, res,next) => {
     try{
         const user = await UserModel.findOne({resetPasswordToken: req.params.token, resetPasswordExpires: {$gt: Date.now()}});
         if (!user) {
-            return res.status(401).json({message: 'Password reset token is invalid or has expired.'});
+            req.flash('error', 'Password reset token is invalid or has expired.');
+            return res.redirect('/forgot.html');
          } 
-            res.send(user);
+         res.render('reset',{token: req.params.token});
     }
     catch(error){
         res.status(400).send(error);
     }
 })
 
+
 //Reset password
 User.post('/reset/:token',[
     check('password').not().isEmpty().isLength({min: 8}).withMessage('Must be at least 8 chars long'),
-    check('confirmPassword', 'Passwords do not match').custom((value, {req}) => (value === req.body.password)),
   ],validator,
   async (req, res) => {
     try{
@@ -156,13 +157,17 @@ User.post('/reset/:token',[
             return res.status(401).json({message: 'Password reset token is invalid or has expired.'});
          } 
          //Set the new password
+         if(req.body.password === req.body.confirm){
          user.password = req.body.password;         
          user.resetPasswordToken = undefined;
          user.resetPasswordExpires = undefined;
-
          await user.save();
          ConfirmationEmail(user.email,user.name);
          res.status(200).json({message: 'Your password has been updated.'});
+         }
+         else{
+            return req.flash("error", "Passwords do not match.");
+         }
     }
     catch(error){
         res.status(500).json({message: error.message});
@@ -184,20 +189,17 @@ User.get('/profile', authentication, async (req, res) => {
     res.send(req.user);
 })
 
-
  //fetch a user by id
- User.get('/search/:id',(req,res)=>{
-    const object_id = req.params.id;
-    UserModel.findById(object_id).then((user)=>{
-       if(!user){
-           res.status(404)
-           return res.send('404 NOT FOUND');
-       }
-       res.status(200).send(user);
-   }).catch((error)=>{
-      res.status(500);//bad request
-      res.send(error);
-   })
+ User.get('/users/:id',authentication,async(req,res)=>{
+    try {
+        const user = await UserModel.findById(req.params.id);
+        if(!user) {
+            return res.status(404).send();
+        }
+        res.send(user);
+    } catch(error) {
+        res.status(500).send(error);
+    }
 })
 
 //fetch all posts creating by a user

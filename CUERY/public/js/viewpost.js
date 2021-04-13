@@ -322,7 +322,8 @@ function CreateComment() {
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ owner: "test_owner2", content: content, parentPost: postID })
+        body: JSON.stringify({content: content, parentPost: postID })
+
     })
 	.then( function() {
         document.getElementById("comment_editor_textarea").value = "";

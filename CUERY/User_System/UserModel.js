@@ -44,8 +44,14 @@ UserSchema .methods.Token = async function(){
 //reset password,create resetPasswordToken and resetPasswordExpires
 UserSchema .methods.ResetPassword = async function() {
     const user = this;
-    user._id=""+user._id;
-    this.resetPasswordToken = crypto.randomBytes(20).toString('hex');;
+    const JWT_SECRET = 'somee super screcet...';
+const secret = JWT_SECRET + user.password;
+const playload = {
+    email:user.eamil,
+    id:user._id
+}
+this.resetPasswordToken = jwt.sign(playload, secret,{expiresIn:'3600000s'});
+user._id=""+user._id;
     this.resetPasswordExpires = Date.now() + 3600000; //expires in an hour
     await user.save(); //save user
 };

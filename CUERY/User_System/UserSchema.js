@@ -63,6 +63,7 @@ const UserSchema= new mongoose.Schema({
     },
 
     avatar: {
+
         data: Buffer,
         contentType: String
     },
