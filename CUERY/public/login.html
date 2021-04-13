@@ -5,42 +5,27 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1"/>
 	<title>Cuery</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
-	<style>
-		body {height: 100vh; line-height: 200%; background-color: #8cf;}
-		div {height: 100%; margin: 0 auto;} /* margin: 0 auto is for centering */
-		input,label {line-height: 100%;}
-		
-		button {border: 1px solid blue; border-radius: 0.5em; background-color: #def; transition: background 0.2s;}
-		button:hover {background-color: #8cf;}
-		button:active {background-color: #88f;}
-		
-		#redirect {color: blue; cursor: pointer;}
-	</style>
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+  <link rel="stylesheet" href="./css/login.css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
 </head>
+
 <body>
-	<div style="max-width: 600px;">
-		<div style="background-color: #eee; width: 90%; display: flex; align-items: center;">
-			<div style="max-height: 400px; padding: 5%;">
-				<h1 style="text-align: center;">Cuery</h1>
-				<br/>
-				<form id="loginForm" onsubmit="return userLogin();" action="" method="POST">
-					<table>
-						<tr>
-							<td> <label for="email">Email:&nbsp;</label> </td>
-							<td> <input type="email" id="email" name="email"/> </td>
-						</tr>
-						<tr>
-							<td> <label for="password">Password:&nbsp;</label> </td>
-							<td> <input type="password" id="password" name="password"/> </td>
-					</table>
-					<br/>
-					<button id="login" type="submit" style="min-width: 25%;">Login</button>
-					<span id="redirect" style="margin-left: 1em;" onclick="redirect();">New user?</span>
-					<span id="redirect" style="margin-left: 1em;" onclick="redirect2();">Forgot password?</span>
-				</form>
-			</div>
-		</div>
-	</div>
+
+	<div class="main">
+		<p class="sign" align="center">Welcome to Cuery !</p>
+		<form class="form1" id="loginForm" onsubmit="return userLogin();" action="" method="POST">
+		  <input class="un " type="text" align="center" placeholder="email" id="email" name="email">
+		  <input class="pass" type="password" align="center" placeholder="Password" id="password" name="password">
+		   <button id="login" type="submit" class="submit" style="min-width: 25%;">Sign in</button>
+		</form>
+		   <p class="forgot"  align="center"><a href="./registration.html">Sign Up</p>
+		   <p class="forgot"  align="center"><a href="./forgot.html">Forgot Password?</p>
+	 </div>
+		 
 	<script>
         const params = new URLSearchParams(window.location.search);
         if(params.has("loginError")){
@@ -54,9 +39,6 @@
 			window.location.href = "login.html";
 		}
                 
-        function redirect() {window.location.href = "registration.html";}
-                
-		function redirect2() {window.location.href = "forgot.html";}
         function userLogin() {
             let email = document.getElementById("email").value;
             let password = document.getElementById("password").value;
