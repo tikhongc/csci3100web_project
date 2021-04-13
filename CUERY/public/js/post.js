@@ -30,7 +30,7 @@ const options = {
     },
     body: JSON.stringify({userCookie})
 };
-        
+
 var user;
 // check the user's cookie before loading information
 function userAuthentication() {

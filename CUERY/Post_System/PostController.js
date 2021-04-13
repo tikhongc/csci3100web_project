@@ -203,7 +203,6 @@ router.patch('/posts/:id', authentication, async (req, res) => {
  router.patch('/posts/vote/:id', async (req, res) => {
 //router.patch('/posts/vote/:id',authentication, async (req, res) => {
     //DEBUG
-    console.log("voted!!");
     console.log(req.body);
     const {owner, action} = req.body;
 
