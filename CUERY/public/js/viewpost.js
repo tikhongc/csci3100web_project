@@ -1,48 +1,12 @@
 var postID;
+var postOwner;
 var voteStatus = {};
 var originalVoteCount;
+var username;
 
-function getTimeElapsedString(date) {
-    const minute = 60;
-    const hour = 60 * 60;
-    const day = 60 * 60 * 24;
-    const timeElapsed = (Date.now() - date) * 1000; //in seconds
-    
-    if(timeElapsed < hour) {
-        return Math.ceil(timeElapsed / minute) + " minutes ago";
-    }
-    if(timeElapsed < day) {
-        return Math.ceil(timeElapsed / hour) + "hours ago";
-    }
-    return Math.ceil(timeElapsed / day) + "days ago";
-}
-
-const params = new URLSearchParams(window.location.search);
-if(params.has("postid")) {
-    postID = params.get("postid");
-    fetch("/posts/"+params.get("postid"),{method:"GET"})
-	.then(res=>res.json())
-	.then(data=>{
-        document.getElementById("title").innerHTML=data.title;
-        document.getElementById("owner").innerHTML= "Posted by " + data.owner;
-        document.getElementById("text").innerHTML=data.content;
-        document.getElementById("vote_count_post").innerHTML=data.votes;
-        originalVoteCount = data.votes;
-    })
-    .catch(err=>document.getElementById("content").innerHTML="Unable to fetch post :(<br/>"+err);
-}
-
-//finding out the voteStatus for the post
-fetch("/posts/findVoteOwner/" + postID + "?owner=" + "test_owner2", {method:"GET"})
-.then(res => res.json())
-.then(result => {
-    voteStatus.post = result.status;
-    updateStatus("post");
-});
-
+//function definitions
 async function upvote(target) {
     var url;
-    console.log(voteStatus[target]);
 
     if(target === "post") {
         url = "/posts/vote/" + postID;
@@ -60,7 +24,7 @@ async function upvote(target) {
         {
             method:"PATCH", 
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({action:"upvote", owner:"test_owner2"})
+            body: JSON.stringify({action:"upvote", owner: username})
         });
     }
     else if (voteStatus[target] === "downvote") {
@@ -72,13 +36,13 @@ async function upvote(target) {
         {
             method:"PATCH", 
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({action:"cancel", owner:"test_owner2"})
+            body: JSON.stringify({action:"cancel", owner: username})
         });
         await fetch(url, 
         {
             method:"PATCH", 
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({action:"upvote", owner:"test_owner2"})
+            body: JSON.stringify({action:"upvote", owner: username})
         });
     }
     else {
@@ -90,13 +54,12 @@ async function upvote(target) {
             {
                 method:"PATCH", 
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({action:"cancel", owner:"test_owner2"})
+                body: JSON.stringify({action:"cancel", owner: username})
             }
         );
     }
 }
-        {
-            method:"PATCH", 
+
 async function downvote(target) {
     var url;
 
@@ -116,7 +79,7 @@ async function downvote(target) {
         {
             method:"PATCH", 
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({action:"downvote", owner:"test_owner2"})
+            body: JSON.stringify({action:"downvote", owner: username})
         });
     }
     else if (voteStatus[target] === "upvote") {
@@ -128,13 +91,13 @@ async function downvote(target) {
         {
             method:"PATCH", 
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({action:"cancel", owner:"test_owner2"})
+            body: JSON.stringify({action:"cancel", owner: username})
         });
         await fetch(url, 
         {
             method:"PATCH", 
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({action:"downvote", owner:"test_owner2"})
+            body: JSON.stringify({action:"downvote", owner: username})
         });
     }
     else {
@@ -146,7 +109,7 @@ async function downvote(target) {
             {
                 method:"PATCH", 
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({action:"cancel", owner:"test_owner2"})
+                body: JSON.stringify({action:"cancel", owner: username})
             }
         );
     }
@@ -169,14 +132,18 @@ function updateStatus(target) {
     }
 }
 
-//populating the comments
-function AddCommentToList(data) {
+//add one comment to list
+function AddCommentToList(data, indentation) {
+    var element;
+    
     //element
-    var element = document.createElement("div");
-
+    element = document.createElement("div");
     element.style.borderLeft = "3px solid rgba(0, 0, 0, .1)";
-    element.style.padding = "0.7em";
+    element.style.paddingLeft = "0.7em";
+    element.style.marginLeft = indentation + "em";
     element.style.overflow = "auto";
+    if(indentation === 0) element.style.marginBottom = "1em";
+    else element.style.marginTop = "0.7em";
 
     //owner
     var owner = document.createElement("div");
@@ -191,12 +158,19 @@ function AddCommentToList(data) {
     comment.innerHTML = data.content;
     element.appendChild(comment);
 
+    //toolBox
+    var toolBox = document.createElement("div");
+    toolBox.style.width = "100%";
+    toolBox.style.overflow = "hidden";
+    element.appendChild(toolBox);
+
     //voteBox
     var voteBox = document.createElement("div");
     voteBox.style.display = "flex";
     voteBox.style.width = "5em";
     voteBox.style.float = "left";
-    
+    toolBox.appendChild(voteBox);
+
     //upvoteButton
     var upvoteButton = document.createElement("button");
     upvoteButton.style.backgroundImage = "url(../img/up_inactive.png)";
@@ -211,14 +185,12 @@ function AddCommentToList(data) {
 
     //voteCount
     var voteCount = document.createElement("div");
-    if(data.votes) voteCount.innerHTML = data.votes;
-    else voteCount.innerHTML = "0";
+    voteCount.innerHTML = data.votes;
     voteCount.style.width = "3em";
     voteCount.style.lineHeight = "20px";
     voteCount.style.textAlign = "center";
     voteCount.setAttribute("id", "vote_count_" + data._id);
     voteBox.appendChild(voteCount);
-
 
     //downvoteButton
     var downvoteButton = document.createElement("button");
@@ -232,49 +204,243 @@ function AddCommentToList(data) {
     downvoteButton.setAttribute("onclick", "downvote('" + data._id + "')");
     voteBox.appendChild(downvoteButton);
 
-    element.appendChild(voteBox);
+    //deleteButton
+    if(username === data.owner) {
+        var deleteButton = document.createElement("button");
+        deleteButton.innerHTML = "delete comment";
+        deleteButton.style.float = "right";
+        deleteButton.style.height = "2em";
+        deleteButton.style.fontSize = "11px";
+        deleteButton.style.lineHeight = "5px";
+        deleteButton.style.marginLeft = "1em";
+        deleteButton.style.border = "transparent";
+        deleteButton.setAttribute("id", "delete_button");
+        deleteButton.setAttribute("onclick", "deletePostOrComment('" + data._id + "')");
+        toolBox.appendChild(deleteButton);
+    }
 
-    //setting voteStatus
-    fetch("/comments/findVoteOwner/" + data._id + "?owner=" + "test_owner2", {method:"GET"})
+    //display reply button
+    var replyButton = document.createElement("button");
+    replyButton.innerHTML = "reply";
+    replyButton.style.float = "right";
+    replyButton.style.height = "2em";
+    replyButton.style.fontSize = "11px";
+    replyButton.style.lineHeight = "5px";
+    replyButton.style.border = "transparent";
+    replyButton.setAttribute("id", "display_reply_button_" + data._id);
+    replyButton.setAttribute("onclick", "displayReply('" + data._id + "')");
+    toolBox.appendChild(replyButton);
+
+    //reply box
+    var replyBox = document.createElement("div");
+    replyBox.setAttribute("id", "reply_box_" + data._id);
+    replyBox.style.padding = "0";
+    replyBox.style.display = "none";
+    element.appendChild(replyBox);
+
+    //reply textarea
+    var replyTextarea = document.createElement("textarea");
+    replyTextarea.setAttribute("id", "reply_textarea_" + data._id);
+    replyTextarea.setAttribute("rows", "2");
+    replyTextarea.setAttribute("placeholder", "Write your comment here...");
+    replyTextarea.style.padding = "0.5em";
+    replyTextarea.style.lineHeight = "1.5em";
+    replyTextarea.style.float = "bottom";
+    replyTextarea.style.width = "100%";
+    replyTextarea.style.marginTop = "0.5em";
+    replyTextarea.style.marginBottom = "0.5em";
+    replyTextarea.style.resize = "none";
+    replyTextarea.style.display = "block";
+    replyTextarea.style.backgroundColor = "rgb(196, 229, 252)";
+    replyTextarea.style.border = "transparent";
+    replyTextarea.style.borderRadius = "0.5em";
+    replyBox.appendChild(replyTextarea);
+
+    //reply toolbox
+    var replyToolBox = document.createElement("div");
+    replyToolBox.style.width = "100%";
+    replyToolBox.style.overflow = "hidden";
+    replyBox.appendChild(replyToolBox);
+
+    //submit reply button
+    var submitReplyButton = document.createElement("button");
+    submitReplyButton.innerHTML = "reply";
+    submitReplyButton.style.float = "right";
+    submitReplyButton.style.height = "2em";
+    submitReplyButton.style.fontSize = "11px";
+    submitReplyButton.style.lineHeight = "5px";
+    submitReplyButton.style.border = "transparent";
+    submitReplyButton.setAttribute("id", "submit_reply_button");
+    submitReplyButton.setAttribute("onclick", "replyComment('" + data._id + "')");
+    replyToolBox.appendChild(submitReplyButton);
+
+    //children comments box
+    var childrenBox = document.createElement("div");
+    childrenBox.setAttribute("id", "children_box_" + data._id);
+    element.appendChild(childrenBox);
+
+    //populating children box
+    fetch("/comments/children/" + data._id, {method:"GET"})
+    .then(res => res.json())
+    .then(children => {
+        if(children.length) {
+            for(const comment of children) {
+                if(!comment.deleted) {
+                    childrenBox.appendChild(AddCommentToList(comment, 0.5));
+                }
+            };
+        }
+    });
+
+    //initializing vote buttons
+    fetch("/comments/findVoteOwner/" + data._id + "?owner=" + username, {method:"GET"})
     .then(res => res.json())
     .then(result => {
         voteStatus[data._id] = result.status;
         updateStatus(data._id);
     });
+    //document.getElementById("comments").appendChild(element);
 
-    document.getElementById("comments").appendChild(element);
+    return element;
 }
 
-fetch("/comments/children/" + postID, {method:"GET"})
-.then(res => res.json())
-.then(data => {
-    if(data.length) {
-        document.getElementById("comments").innerHTML="";
-        for(const comment of data) AddCommentToList(comment);
-    }
-});
-
-function CreateComment() {
-
+function createNewComment() {
     const comment = {
-        owner: "bitchass",
+        owner: username,
         content: document.getElementById("comment_editor_textarea").value,
         parentPost: postID,
         parentComment: ""
     };
+    fetch("/comments", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(comment)
+    })
+    .then(res => res.json())
+	.then((commentPosted) => {
+        document.getElementById("comment_editor_textarea").value = "";
+        AddCommentToList(commentPosted);
+	})
+	.catch(err => console.log(err));
+}
+
+function deletePostOrComment(target) {
+    var url
+    if(target === "post") {
+        url = "/posts/" + postID;
+    }
+    else {
+        url = "/comments/" + target;
+    }
+    fetch(url, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json"
+        },
+    }).then((res) => console.log(res));
+}
+
+function displayReply(target) {
+    button = "display_reply_button_" + target;
+    target = "reply_box_" + target;
+
+    console.log(target);
+    if(document.getElementById(target).style.display === "none") {
+        document.getElementById(button).innerHTML = "close";
+        //document.getElementById(button).style.backgroundColor = "Red";
+        document.getElementById(target).style.display = "block";
+    }
+    else {
+        document.getElementById(button).innerHTML = "reply";
+        document.getElementById(target).style.display = "none";
+    }
+}
+
+function replyComment(target) {
+    const content = document.getElementById("reply_textarea_" + target).value;
+
+    const newComment = {
+        owner: username,
+        parentPost: postID,
+        parentComment: target,
+        content: content
+    }
 
     fetch("/comments", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(content)
+        body: JSON.stringify(newComment)
+    }).then(res => res.json())
+    .then(res => {
+        console.log(res.body);
+        document.getElementById("reply_textarea_" + target).value = ""
+        displayReply(target);
     })
-	.then( function() {
-        document.getElementById("comment_editor_textarea").value = "";
-        AddCommentToList(comment);
-		//window.location.href = "main.html";
-	}) 
-	.catch(err => console.log(err));
 }
+
+
+//getting all the data for the page
+//getting post data
+const params = new URLSearchParams(window.location.search);
+if(params.has("postid")) {
+    postID = params.get("postid");
+    fetch("/posts/"+params.get("postid"),{method:"GET"})
+	.then(res=>res.json())
+	.then(data=>{
+        document.getElementById("title").innerHTML=data.title;
+        document.getElementById("owner").innerHTML= "Posted by " + data.owner;
+        postOwner = data.owner;
+        document.getElementById("text").innerHTML=data.content;
+        document.getElementById("vote_count_post").innerHTML=data.votes;
+        originalVoteCount = data.votes;
+    })
+    .then(() => {
+        //fetching username
+        fetch('/checkCookie', options).then(res => res.json())
+        .then(data=> {
+            if (data.answer === 'NA'){
+                alert("Please login first: )");
+                window.location.href = "login.html";
+            }
+            else{
+                username = data.name;
+                //putting a delete button if the user owns the post
+                if(postOwner === username) {
+                    var button = document.createElement("button");
+                    button.setAttribute("onclick", "deletePostOrComment('post')")
+                    button.innerHTML = "delete post";
+                    button.style.float = "right";
+                    document.getElementById("contentbox").appendChild(button);
+                }
+            }
+        })
+        .then(() => {
+            //finding out the voteStatus for the post
+            fetch("/posts/findVoteOwner/" + postID + "?owner=" + username, {method:"GET"})
+            .then(res => res.json())
+            .then(result => {
+                voteStatus.post = result.status;
+                updateStatus("post");
+            })
+            .then(() => {
+                fetch("/comments/children/" + postID, {method:"GET"})
+                .then(res => res.json())
+                .then(data => {
+                    if(data.length) {
+                        document.getElementById("comments").innerHTML="";
+                        for(const comment of data) {
+                            if(!comment.deleted) {
+                                document.getElementById("comments").appendChild(AddCommentToList(comment, 0));
+                            }
+                        };
+                    }
+                });
+            });
+        });
+    })
+    .catch(err=>document.getElementById("content").innerHTML="Unable to fetch post :(<br/>"+err);
 }

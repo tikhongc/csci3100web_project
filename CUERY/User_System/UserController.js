@@ -263,33 +263,88 @@ User.get('/user/comments/:id' , async(req,res)=>{
     }
 })
 
-//update user by id
-User.patch('/update',authentication,async(req,res)=>{
-    //only allow to update the atrribute included in user model
-    const up = Object.keys(req.body);
-    const allowupdate=['name','password','year','email','bio','pre',''];//and 
-    const valid = up.every((update)=>{
-        return allowupdate.includes(update);
-     })    
-     if(!valid){
-        res.status(400);
-        return res.send('Invalid updates.')
-    }
-    //update code
-    try{
-        // allow to update many times
-        up.forEach((update)=>{
-         req.user[update]=req.body[update];
-        })
-        await req.user.save();
-        res.status(200);
-        res.send(req.user);
-    }catch(error){
-        res.status(400);//bad request
-        res.send(error);
-    }
-})
+// //update user by id
+// User.patch('/update',authentication,async(req,res)=>{
+//     //only allow to update the atrribute included in user model
+//     const up = Object.keys(req.body);
+//     const allowupdate=['name','password','year','email','bio','pre',''];//and 
+//     const valid = up.every((update)=>{
+//         return allowupdate.includes(update);
+//      })    
+//      if(!valid){
+//         res.status(400);
+//         return res.send('Invalid updates.')
+//     }
+//     //update code
+//     try{
+//         // allow to update many times
+//         up.forEach((update)=>{
+//          req.user[update]=req.body[update];
+//         })
+//         await req.user.save();
+//         res.status(200);
+//         res.send(req.user);
+//     }catch(error){
+//         res.status(400);//bad request
+//         res.send(error);
+//     }
+// })
 
+User.post('/update',authentication, upload.single('avatar'),async(req,res,next)=>{
+    
+    const isMatch = await bcrypt.compare(req.body.oldpw, req.user.password);
+    if (!isMatch){
+        return res.redirect("/userupdate.html?error=1")
+    }
+    
+    if (req.body.name !== ""){
+        const user = await UserModel.findOne({ name : req.body.name });
+        if (user){
+            if (user.name !== req.user.name){
+                return res.redirect("/userupdate.html?error=2")
+            }
+        }
+    }
+    if (req.body.email !== ""){
+        const useremail = await UserModel.findOne({ email : req.body.email });
+        if (useremail){
+            if (useremail.email !== req.user.email){
+                return res.redirect("/userupdate.html?error=3")
+            }
+        }
+        if (!validateEmail(req.body.email))
+            return res.redirect('/userupdate.html?error=4');
+    }
+    const updateUser = {
+        year: req.body.year
+    };
+    if (req.body.name !== ""){
+        updateUser["name"] = req.body.name;
+    }
+    if (req.body.bio !== ""){
+        updateUser["bio"] = req.body.bio;
+    }
+    if (req.body.password !== ""){
+        updateUser["password"] = await bcrypt.hash(req.body.password,8); 
+    }
+    if (req.body.email !== ""){
+        updateUser["email"] = req.body.email;
+    }
+    if (req.file){
+        updateUser["avatar"] = { 
+            data: fs.readFileSync(path.join("./CUERY/User_System/uploads/" + req.file.filename)),
+            contentType: req.file.mimetype
+        }
+    }
+    await UserModel.updateOne({name: req.user.name}, {$set: updateUser}, (err, result) =>{
+        if (err){
+            res.status(500); // bad request
+            console.log(err);
+        }
+        console.log("updated");
+        res.redirect("user.html?success");
+    })
+});
 
 //only server-side allowed management:
 
