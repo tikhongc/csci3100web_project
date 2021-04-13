@@ -29,6 +29,9 @@
 			<div id="content" style="padding: 5%;">
 				<h1 id="profilename" class="profilename">Name</h1>
 				<img id="userpropic" class="propic" src="" alt="placeholder-image"/>
+                                <div class="updatediv">
+                                    <button class="updatebutton" onclick="updateUser();">Update Info</button>
+                                </div>
 				<p>Email: <span id="email">placeholder-email</span></p>
 				<p>Year: <span id="year">placeholder-year</span></p>
 				<p>Password: <span id="password">********</span></p>
@@ -41,6 +44,11 @@
         <script src="./js/post.js"></script>
         
 	<script>
+                const params = new URLSearchParams(window.location.search);
+                if(params.has("success")){
+                    alert("You have successfully update the profile!");
+                    window.location.href = "user.html";
+		}
                 FetchHeader();
                 userAuthentication(); 
                 console.log("hello user");

@@ -26,7 +26,7 @@ button:active {background-color: #88f;}
     border: 1.5px solid yellowgreen;
     border-radius: 1em;
     padding-bottom: 2em
-    }
+}
                 
  .profilebutton{
     height: 20px;
@@ -111,12 +111,7 @@ button:active {background-color: #88f;}
 }
 #content {
 	margin-left: 50px;
-    padding-right: 1em;
-    padding-bottom: 0.5em;
 	overflow: auto;
-    line-break: auto;
-    word-break: break-all;
-    line-height: 1.5em;
 }
 #vote {
 	float: left;
@@ -127,14 +122,13 @@ button:active {background-color: #88f;}
 	align-items: center;
 }
 #owner {
-	font-size: 12px;
+	font-size: 10px;
 	font-style: italic;
-	line-height: 15px;
+	line-height: 20px;
 }
 #title {
 	font-size: 30px;
 	font-weight: bold;
-    line-height: 65px;
 }
 #vote_count {
 	padding: 0px;
@@ -149,7 +143,7 @@ button:active {background-color: #88f;}
 }
 #comment_editor_textarea {
 	width: 700px;
-	margin-top: 1em;
+	margin: 0;
 	padding: 0.5em;
 	line-height: 1.5em;
 	background-color: rgb(196, 229, 252);
@@ -174,4 +168,41 @@ button:active {background-color: #88f;}
   height: 20rem;
   width: 20rem;
 }
+
+.updatediv {
+  text-align: center;  
+}
+
+.updatebutton{
+    height: 20px;
+    position: relative;
+    width: 40%;
+    border: 2px solid pink;
+    border-radius: 1em;
+    padding-bottom: 2em;
+    margin-bottom: 30px;
+}
+
+.updatesubmitbutton{
+    height: 20px;
+    position: relative;
+    width: 25%;
+    border: 2px solid brown;
+    border-radius: 1em;
+    padding-bottom: 2em;
+    margin-bottom: 30px;
+}
+
+.updatesubmitdiv{
+    text-align: center; 
+}
+
+div .reminder{
+    color: red;
+    font-size: 12px;
+    line-height: 70%;
+    margin-top: 0;
+    padding-bottom: 1.5em;
+}
+
 

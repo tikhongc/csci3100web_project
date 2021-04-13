@@ -2,14 +2,37 @@
 
 require('../mongodb/mongoose');
 const fs = require('fs');
+const objectid = require('mongodb').ObjectID;
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const UserModel = require('./UserModel');
 const {WelcomeEmail, RecoveryEmail,ConfirmationEmail} = require('../User_System/method/email');
 const authentication=require('../User_System/method/authentication');
-const User = new express.Router();    
+const User = new express.Router(); 
 
+const multer = require('multer');
+const path = require('path');
 
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, './CUERY/User_System/uploads');
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname + '-' + Date.now());
+    }
+});
+
+const fileFilter = (req, file, cb) => {
+    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png')
+        cb(null, true);
+    else
+        cb(null, false);
+}
+
+const upload = multer({ 
+    storage: storage,
+    fileFilter: fileFilter
+});
 
 // function to check unique email also
 function validateEmail(email) {
@@ -34,7 +57,7 @@ function validateEmail(email) {
     newUser.avatar.contentType = "image/png";
     
     if (!validateEmail(req.body.newEmail))
-        res.redirect('/registration.html?invalid=2');
+        return res.redirect('/registration.html?invalid=2');
     else{
         try{
             await newUser.save();//save user
@@ -49,7 +72,6 @@ function validateEmail(email) {
         }
     }
     })
-
 
  //for user to log in 
  User.post('/login',async(req,res)=>{
@@ -121,8 +143,8 @@ User.post("/forgot", [
          } 
 
        await user.ResetPassword();
-       let link = "http://" + req.headers.host + "/reset/" + user.resetPasswordToken;
-       console.log(link);
+       let link = "http://" + req.headers.host + "/api/recovery/reset/" + user.resetPasswordToken;
+       console.log(user.resetPasswordToken);
        RecoveryEmail(user.email,user.name,link);
        res.status(200).send('Account activation email has been sent,please check your mailbox.');
     }
@@ -132,24 +154,23 @@ User.post("/forgot", [
 });
 
 //get passwordReset
-User.get('/reset/:token',async (req, res,next) => {
+User.get('/reset/:token',async (req, res) => {
     try{
         const user = await UserModel.findOne({resetPasswordToken: req.params.token, resetPasswordExpires: {$gt: Date.now()}});
         if (!user) {
-            req.flash('error', 'Password reset token is invalid or has expired.');
-            return res.redirect('/forgot.html');
+            return res.status(401).json({message: 'Password reset token is invalid or has expired.'});
          } 
-         res.render('reset',{token: req.params.token});
+            res.send(user);
     }
     catch(error){
         res.status(400).send(error);
     }
 })
 
-
 //Reset password
 User.post('/reset/:token',[
     check('password').not().isEmpty().isLength({min: 8}).withMessage('Must be at least 8 chars long'),
+    check('confirmPassword', 'Passwords do not match').custom((value, {req}) => (value === req.body.password)),
   ],validator,
   async (req, res) => {
     try{
@@ -158,17 +179,13 @@ User.post('/reset/:token',[
             return res.status(401).json({message: 'Password reset token is invalid or has expired.'});
          } 
          //Set the new password
-         if(req.body.password === req.body.confirm){
          user.password = req.body.password;         
          user.resetPasswordToken = undefined;
          user.resetPasswordExpires = undefined;
+
          await user.save();
          ConfirmationEmail(user.email,user.name);
          res.status(200).json({message: 'Your password has been updated.'});
-         }
-         else{
-            return req.flash("error", "Passwords do not match.");
-         }
     }
     catch(error){
         res.status(500).json({message: error.message});
@@ -190,17 +207,20 @@ User.get('/profile', authentication, async (req, res) => {
     res.send(req.user);
 })
 
+
  //fetch a user by id
- User.get('/users/:id',authentication,async(req,res)=>{
-    try {
-        const user = await UserModel.findById(req.params.id);
-        if(!user) {
-            return res.status(404).send();
-        }
-        res.send(user);
-    } catch(error) {
-        res.status(500).send(error);
-    }
+ User.get('/search/:id',(req,res)=>{
+    const object_id = req.params.id;
+    UserModel.findById(object_id).then((user)=>{
+       if(!user){
+           res.status(404)
+           return res.send('404 NOT FOUND');
+       }
+       res.status(200).send(user);
+   }).catch((error)=>{
+      res.status(500);//bad request
+      res.send(error);
+   })
 })
 
 //fetch all posts creating by a user
@@ -236,11 +256,81 @@ User.get('/user/comments/:id' , async(req,res)=>{
     }
 })
 
+User.post('/update',authentication, upload.single('avatar'),async(req,res,next)=>{
+    
+    const isMatch = await bcrypt.compare(req.body.oldpw, req.user.password);
+    if (!isMatch){
+        return res.redirect("/userupdate.html?error=1")
+    }
+    
+    if (req.body.name !== ""){
+        const user = await UserModel.findOne({ name : req.body.name });
+        if (user){
+            if (user.name !== req.user.name){
+                return res.redirect("/userupdate.html?error=2")
+            }
+        }
+    }
+    if (req.body.email !== ""){
+        const useremail = await UserModel.findOne({ email : req.body.email });
+        if (useremail){
+            if (useremail.email !== req.user.email){
+                return res.redirect("/userupdate.html?error=3")
+            }
+        }
+        if (!validateEmail(req.body.email))
+            return res.redirect('/userupdate.html?error=4');
+    }
+    const updateUser = {
+        year: req.body.year
+    };
+    if (req.body.name !== ""){
+        updateUser["name"] = req.body.name;
+    }
+    if (req.body.bio !== ""){
+        updateUser["bio"] = req.body.bio;
+    }
+    if (req.body.password !== ""){
+        updateUser["password"] = await bcrypt.hash(req.body.password,8); 
+    }
+    if (req.body.email !== ""){
+        updateUser["email"] = req.body.email;
+    }
+    if (req.file){
+        updateUser["avatar"] = { 
+            data: fs.readFileSync(path.join("./CUERY/User_System/uploads/" + req.file.filename)),
+            contentType: req.file.mimetype
+        }
+    }
+    await UserModel.updateOne({name: req.user.name}, {$set: updateUser}, (err, result) =>{
+        if (err){
+            res.status(500); // bad request
+            console.log(err);
+        }
+        console.log("updated");
+        res.redirect("user.html?success");
+    })
+});
+/*
 //update user by id
-User.patch('/update',authentication,async(req,res)=>{
+User.post('/update',authentication, upload.single('avatar'),async(req,res,next)=>{
     //only allow to update the atrribute included in user model
-    const up = Object.keys(req.body);
-    const allowupdate=['name','password','year','email','bio','pre',''];//and 
+    console.log(req.user);
+    var updateuser = {
+        name: req.body.name,
+        email: req.body.email,
+        bio: req.body.bio,
+        password: req.body.password,
+        oldpw: req.body.oldpw,
+        year: req.body.year,
+        avatar:{
+            data: fs.readFileSync(path.join("./CUERY/User_System/uploads/" + req.file.filename)),
+            contentType: req.file.mimetype
+        }
+    }
+    
+    const up = Object.keys(obj);
+    const allowupdate=['name','password','year','email','bio','pre','avatar'];//and 
     const valid = up.every((update)=>{
         return allowupdate.includes(update);
      })    
@@ -252,7 +342,7 @@ User.patch('/update',authentication,async(req,res)=>{
     try{
         // allow to update many times
         up.forEach((update)=>{
-         req.user[update]=req.body[update];
+         req.user[update]=obj[update];
         })
         await req.user.save();
         res.status(200);
@@ -262,7 +352,7 @@ User.patch('/update',authentication,async(req,res)=>{
         res.send(error);
     }
 })
-
+*/
 
 //only server-side allowed management:
 

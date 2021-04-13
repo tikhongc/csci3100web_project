@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+<head>
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<title>Cuery</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+	<link rel="stylesheet" href="/css/post.css">
+        <style>
+            
+		body { line-height: 200%; background-color: #8cf;}
+		div {height: 100%; margin: 0 auto;} 
+		input,label {line-height: 130%;}
+                
+		button {border: 1px solid brown; border-radius: 0.5em; background-color: #def; transition: background 0.2s;}
+		button:hover {background-color: #8cf;}
+		button:active {background-color: #88f;}
+		
+		#redirect {color: blue; cursor: pointer;} 
+              
+	</style>
+</head>
+<body>
+    <div id="header"></div>
+    <hr style="margin: 0;"/>
+	<div style="max-width: 600px;">
+		<div style="background-color: #eee; width: 90%; display: flex; align-items: center;">
+			<div style="max-height: 620px; padding: 5%;">
+				<h1 style="text-align: center;">Change Profile</h1>
+				<br/>
+                                <div class="reminder">
+                                <p>*User must input old password in order to update profile</p><br/>
+                                <p>*Not all information are needed</p><br/>
+                                </div>
+                                <form id="UpdateForm" onsubmit="return checkUserUpdate();" action="" method="POST" enctype="multipart/form-data"> 
+					
+                                        <table>
+                                            <tr>
+                                        	<td> <label for="name">Username:&nbsp;</label> </td>
+                                        	<td> <input type="text" id="name" name="name" placeholder="3-10 characters"/> </td>
+                                            </tr>
+						<tr>
+							<td> <label for="email">Email:&nbsp;</label> </td>
+							<td> <input type="email" id="email" name="email"/> </td>
+						</tr>
+                                                <tr>
+                                                    <td> <label for="oldpw">Old Password:<span style="color:red">*</span>&nbsp;</label> </td>
+							<td> <input type="password" id="oldpw" name="oldpw"/> </td>
+						</tr>
+                                                <tr>
+							<td> <label for="password">New Password:&nbsp;</label> </td>
+							<td> <input type="password" id="password" name="password" placeholder="8-18 characters"/> </td>
+						</tr>
+                                                <tr>
+							<td> <label for="newpw2">Confirm<br/>Password:&nbsp;</label> </td>
+							<td> <input type="password" id="newpw2" name="newpw2"/> </td>
+						</tr>
+                                         <tr>
+					<td> <label for="year">Year:&nbsp;</label> </td>
+					<td> 
+                                          <select id="year" name="year">
+                                          <option value="1" selected>1</option>
+                                          <option value="2">2</option>
+                                          <option value="3">3</option>
+                                          <option value="4">4</option>
+                                          <option value="5">5</option>
+                                          <option value="6">6</option>
+                                        </select>
+                                         </td>
+                                	</tr>
+                                        
+					</table>
+                                     
+                                    <div>
+                                        <label for="bio">Bio:</label><br/>
+                                        <textarea id="bio" name="bio" rows="2" cols="50" placeholder="type something..."></textarea>
+                                    </div>
+                                    <div>
+                                        <label for="avatar">Upload Image:&nbsp;</label>
+					<input id="uploadimg" type="file" name="avatar">
+                                    </div>
+                                    <br/>
+                                    <div class="updatesubmitdiv">
+                                    <button id="update" class="updatesubmitbutton" type="submit">Submit</button>
+                                    </div>
+                                </form>
+			</div>
+		</div>
+	</div>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        if(params.has("error")){
+			switch(params.get("error")){
+				case "1":
+					alert("Update Info Error. (Incorrect password)");
+					break;
+				case "2":
+					alert("Update Info Error. (Please use another username)");
+                                        break;
+                                case "3":
+					alert("Update Info Error. (Your email has already registered)");
+                                        break;  
+                                case "4":
+					alert("Update Info Error. (Invalid email)");
+                                        break;
+			}
+			window.location.href = "userupdate.html";
+		}
+    </script>    
+    <script src="./js/post.js"></script>
+	<script>
+            FetchHeader();
+            userAuthentication();
+        </script>
+</body>
+</html>
