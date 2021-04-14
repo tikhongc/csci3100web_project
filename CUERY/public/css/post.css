@@ -113,8 +113,10 @@ button:active {background-color: #88f;}
 	overflow: auto;
 }
 #content {
-	margin-left: 50px;
+	margin-left: 3em;
+    margin-right: 2.5em;
 	overflow: auto;
+    word-break: break-word;
 }
 #vote {
 	float: left;
@@ -132,6 +134,7 @@ button:active {background-color: #88f;}
 #title {
 	font-size: 30px;
 	font-weight: bold;
+    word-break: break-word;
 }
 #vote_count {
 	padding: 0px;

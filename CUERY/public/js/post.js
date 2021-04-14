@@ -88,6 +88,8 @@ function toTitleCase(str) {
 function ViewPost(postid) {window.location="/viewpost.html?postid="+postid;}
 function AddPost(data) { // data is an object
 	var post=document.createElement("div");
+	post.style.whiteSpace = "nowrap";
+	post.style.overflow = "hidden";
 	var p=document.createElement("p");
 	var obj=document.createElement("div");
 	if(data.votes === 0) colorValue = "grey";
