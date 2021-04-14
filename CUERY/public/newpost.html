@@ -8,15 +8,16 @@
 	<link rel="stylesheet" href="./css/post.css">
 </head>
 <body>
-	<div id="header"></div>
-	<hr style="margin: 0;"/>
-	<div style="padding: 0.5em 1em;">
-		<label for="title">Title: </label><input type="text" id="title" placeholder="A suitable title"></input><br/>
-		<label for="category">Category: </label><select id="category" ></select><br/>
-		<label for="topic">Topic: </label><select id="topic"></select><br/>
-		<label for="newcontent">New post to [forum]:</label><br/>
-		<textarea id="newcontent"></textarea>
-		<div style="text-align: right;"><button type="button" onclick="CreatePost();">Submit</button></div>
+	<div style="width: 700px;">
+		<div id="header"></div>
+		<hr style="margin: 0;"/>
+		<div style="padding-top: 1em; padding: 0.5em;">
+			<label for="category">Category: </label><select id="category" style="margin-right: 1em;" ></select>
+			<label for="topic">Topic: </label><select id="topic"></select><br/>
+			<label for="title"></label><input type="text" id="title" placeholder="Title"></input><br/>
+			<textarea id="newcontent" placeholder="Write your content here..." rows="20"></textarea>
+			<div style="text-align: right;"><button type="button" onclick="CreatePost();">Submit</button></div>
+		</div>
 	</div>
 	<script src="./js/post.js"></script>
 	<script>

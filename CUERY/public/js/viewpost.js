@@ -250,6 +250,7 @@ function addCommentToList(data, indentation, depth) {
     replyTextarea.setAttribute("id", "reply_textarea_" + data._id);
     replyTextarea.setAttribute("rows", "2");
     replyTextarea.setAttribute("placeholder", "Write your comment here...");
+
     replyTextarea.style.padding = "0.5em";
     replyTextarea.style.lineHeight = "1.5em";
     replyTextarea.style.float = "bottom";
@@ -258,9 +259,9 @@ function addCommentToList(data, indentation, depth) {
     replyTextarea.style.marginBottom = "0.5em";
     replyTextarea.style.resize = "none";
     replyTextarea.style.display = "block";
-    replyTextarea.style.backgroundColor = "rgb(196, 229, 252)";
-    replyTextarea.style.border = "transparent";
-    replyTextarea.style.borderRadius = "0.5em";
+    replyTextarea.style.backgroundColor = "rgb(255, 255, 255)";
+    replyTextarea.style.border = "0.1em solid #a4d3f1";
+    replyTextarea.style.borderRadius = "5px";
     replyBox.appendChild(replyTextarea);
 
     //reply toolbox
