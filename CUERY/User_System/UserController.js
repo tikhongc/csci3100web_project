@@ -121,6 +121,15 @@ User.post('/logout',authentication, async(req,res)=>{
    }
 })
 
+//get passwordReset
+User.get('/forgot',async (req, res,next) => {
+    try{
+         res.render('forgot');
+    }
+    catch(error){
+        res.status(400).send(error);
+    }
+})
 
 //User recovery
 const { check  } = require('express-validator');
@@ -137,8 +146,8 @@ User.post("/forgot", [
 
         if (!user) {
             //account dose not exist!
-            return res.status(401).json({message: 'The email address ' + email + 
-            ' is not associated with any account. Double-check your email address and try again.'});
+            return res.status(401).send('The email address ' + email + 
+            ' is not associated with any account. Double-check your email address and try again.');
          } 
 
        await user.ResetPassword();
@@ -148,7 +157,7 @@ User.post("/forgot", [
        res.status(200).send('Account activation email has been sent,please check your mailbox.');
     }
     catch(error){
-        res.status(500).json({message: error.message});
+        res.status(500).send(error);
     }
 });
 
@@ -157,7 +166,7 @@ User.get('/reset/:token',async (req, res,next) => {
     try{
         const user = await UserModel.findOne({resetPasswordToken: req.params.token, resetPasswordExpires: {$gt: Date.now()}});
         if (!user) {
-            return res.status(401).json({message: 'Password reset token is invalid or has expired.'});
+            return res.status(401).send('Password reset token is invalid or has expired.');
          } 
          res.render('reset',{token: req.params.token});
     }
@@ -169,13 +178,15 @@ User.get('/reset/:token',async (req, res,next) => {
 //Reset password
 User.post('/reset/:token',[
     check('password').not().isEmpty().isLength({min: 8}).withMessage('Must be at least 8 chars long'),
-    check('confirmPassword', 'Passwords do not match').custom((value, {req}) => (value === req.body.password)),
+
+    check('confirm', 'Passwords do not match').custom((value, {req}) => (value === req.body.password)),
+
   ],validator,
   async (req, res) => {
     try{
         const user = await UserModel.findOne({resetPasswordToken: req.params.token, resetPasswordExpires: {$gt: Date.now()}});
         if (!user) {
-            return res.status(401).json({message: 'Password reset token is invalid or has expired.'});
+            return res.status(401).send( 'Password reset token is invalid or has expired.');
          } 
          //Set the new password
          user.password = req.body.password;         
@@ -184,10 +195,10 @@ User.post('/reset/:token',[
 
          await user.save();
          ConfirmationEmail(user.email,user.name);
-         res.status(200).json({message: 'Your password has been updated.'});
+         res.status(200).send('Your password has been updated.');
     }
     catch(error){
-        res.status(500).json({message: error.message});
+        res.status(500).send(error);
     }
 })
 
@@ -261,15 +272,6 @@ User.post('/update',authentication, upload.single('avatar'),async(req,res,next)=
     if (!isMatch){
         return res.redirect("/userupdate.html?error=1")
     }
-    
-    if (req.body.name !== ""){
-        const user = await UserModel.findOne({ name : req.body.name });
-        if (user){
-            if (user.name !== req.user.name){
-                return res.redirect("/userupdate.html?error=2")
-            }
-        }
-    }
     if (req.body.email !== ""){
         const useremail = await UserModel.findOne({ email : req.body.email });
         if (useremail){
@@ -283,9 +285,6 @@ User.post('/update',authentication, upload.single('avatar'),async(req,res,next)=
     const updateUser = {
         year: req.body.year
     };
-    if (req.body.name !== ""){
-        updateUser["name"] = req.body.name;
-    }
     if (req.body.bio !== ""){
         updateUser["bio"] = req.body.bio;
     }
@@ -310,48 +309,6 @@ User.post('/update',authentication, upload.single('avatar'),async(req,res,next)=
         res.redirect("user.html?success");
     })
 });
-/*
-//update user by id
-User.post('/update',authentication, upload.single('avatar'),async(req,res,next)=>{
-    //only allow to update the atrribute included in user model
-    console.log(req.user);
-    var updateuser = {
-        name: req.body.name,
-        email: req.body.email,
-        bio: req.body.bio,
-        password: req.body.password,
-        oldpw: req.body.oldpw,
-        year: req.body.year,
-        avatar:{
-            data: fs.readFileSync(path.join("./CUERY/User_System/uploads/" + req.file.filename)),
-            contentType: req.file.mimetype
-        }
-    }
-    
-    const up = Object.keys(obj);
-    const allowupdate=['name','password','year','email','bio','pre','avatar'];//and 
-    const valid = up.every((update)=>{
-        return allowupdate.includes(update);
-     })    
-     if(!valid){
-        res.status(400);
-        return res.send('Invalid updates.')
-    }
-    //update code
-    try{
-        // allow to update many times
-        up.forEach((update)=>{
-         req.user[update]=obj[update];
-        })
-        await req.user.save();
-        res.status(200);
-        res.send(req.user);
-    }catch(error){
-        res.status(400);//bad request
-        res.send(error);
-    }
-})
-*/
 
 //only server-side allowed management:
 
