@@ -165,6 +165,7 @@ function AddPost(data) { // data is an object
 	var post=document.createElement("div");
 	post.style.whiteSpace = "nowrap";
 	post.style.overflow = "hidden";
+
 	var p=document.createElement("p");
 	var obj=document.createElement("div");
 	if(data.votes === 0) colorValue = "grey";
@@ -173,24 +174,52 @@ function AddPost(data) { // data is an object
 	var voteCount;
 	if(Math.abs(data.votes) > 1000) {
 		voteCount = (Math.floor(data.votes / 100) / 10).toString() + "k";
-		
 	}
 	else voteCount = data.votes.toString();
 	p.innerHTML = "<span style='color: " + colorValue + ";'>" + voteCount + "</span>";
-	p.style.width = "2em";
-	p.style.textAlign = "right";
-	p.style.marginRight = "0.5em";
+	p.style.width = "3em";
+	p.style.textAlign = "center";
+	p.style.margin = "0 auto";
+	p.style.marginRight = "0.2em";
 	p.style.fontSize="200%";
 	post.appendChild(p);
+
 	p=document.createElement("p");
 	obj.innerHTML=data.title;
+	obj.style.marginBottom = "0.4em";
 	p.appendChild(obj);
+
 	obj=document.createElement("div");
 	obj.classList.add("text-secondary");
 	//parsing date
 	const date = new Date(data.createdAt);
 	var dateString = date.getDay() + "/" + date.getMonth() + "/" + date.getFullYear();
-	obj.innerHTML=data.owner + " on " + dateString;
+
+	//adding category tag
+	category = document.createElement("div");
+	category.setAttribute("class", "tag");
+	category.setAttribute("id", "category_" + data._id);
+	category.innerHTML = toTitleCase(data.category);
+	category.style.marginRight = "0.5em";
+	obj.appendChild(category);
+
+	//adding topic tag
+	topic = document.createElement("div");
+	topic.setAttribute("class", "tag");
+	topic.setAttribute("id", "topic_" + data._id);
+	topic.innerHTML = toTitleCase(data.topic);
+	topic.style.marginRight = "0.5em";
+	obj.appendChild(topic);
+
+	obj.insertAdjacentHTML("beforeend", "by " + data.owner + " on " + dateString);
+
+	//"<div class='tag' id='category_" + data._id + "'>category</div> <div class='tag' id='topic_" + data._id + "'>topic</div> 
+
+	//parsing tags
+	//console.log(data._id);
+	//console.log(document.getElementById("category_" + data._id));// = "data.category";
+	//document.getElementById("topic_" + data._id).innerHTML = data.topic;
+
 	obj.style.fontSize = "10px";
 	p.appendChild(obj);
 	post.appendChild(p);
