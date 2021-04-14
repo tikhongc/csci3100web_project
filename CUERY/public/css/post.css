@@ -4,7 +4,7 @@ body {line-height: 200%; background-color: #ede4f0; overflow-x: hidden;
     background-image: url("../img/background.png");
     background-repeat: no-repeat;
     background-position: right 100px;
-    background-size: 300px 300px; 
+    background-size: 400px 350px; 
 }
 div {height: 100%; margin: 0 auto;} /* margin: 0 auto is for centering */
 p {display: inline-block; margin: 0.2em;}
