@@ -88,9 +88,23 @@ function toTitleCase(str) {
 function ViewPost(postid) {window.location="/viewpost.html?postid="+postid;}
 function AddPost(data) { // data is an object
 	var post=document.createElement("div");
+	post.style.whiteSpace = "nowrap";
+	post.style.overflow = "hidden";
 	var p=document.createElement("p");
 	var obj=document.createElement("div");
-	p.innerHTML=data.upvotes-data.downvotes;
+	if(data.votes === 0) colorValue = "grey";
+	else if(data.votes < 0) colorValue = "rgb(255, 65, 65)";
+	else colorValue = "rgb(34, 160, 255)";
+	var voteCount;
+	if(Math.abs(data.votes) > 1000) {
+		voteCount = (Math.floor(data.votes / 100) / 10).toString() + "k";
+		
+	}
+	else voteCount = data.votes.toString();
+	p.innerHTML = "<span style='color: " + colorValue + ";'>" + voteCount + "</span>";
+	p.style.width = "2em";
+	p.style.textAlign = "right";
+	p.style.marginRight = "0.5em";
 	p.style.fontSize="200%";
 	post.appendChild(p);
 	p=document.createElement("p");
@@ -123,9 +137,10 @@ function ReloadPosts(keepPage) {
 	// erase all previous posts and disable page changing
 	document.getElementById("posts").innerHTML="Loading...";
 	document.getElementById("pages").innerHTML="&nbsp;1";
+	if(!keepPage)history.pushState({page:1},"page 1","?page=1");
 	
 	const query = new URLSearchParams(window.location.search);
-	const page=query.has("page")?query.get("page"):"1";
+	const page=(keepPage&&query.has("page"))?query.get("page"):"1";
 	const limit=10; // temporary value
 	const category=document.getElementById("category").value;
 	const topic=document.getElementById("topic").value;
@@ -142,13 +157,16 @@ function ReloadPosts(keepPage) {
 	.then(res=>res.text())
 	.then(count=>{
 		document.getElementById("pages").innerHTML="";
-		var a,pages=document.getElementById("pages");
+		var p,pages=document.getElementById("pages");
 		const pageCnt=Math.ceil(count/limit);
 		for(let i=1;i<=pageCnt;++i){
-			a=document.createElement("a");
-			a.innerHTML=i;
-			a.setAttribute("href","/main.html?page="+i);
-			pages.appendChild(a);
+			p=document.createElement("p");
+			p.innerHTML=i;
+			p.addEventListener("click",()=>{
+				history.pushState({page:i},"page "+i,"?page="+i);
+				ReloadPosts(true);
+			});
+			pages.appendChild(p);
 		}
 	})
 	.catch(err=>console.log("Error: unable to fetch posts and/or pages.\n",err));

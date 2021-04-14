@@ -81,10 +81,12 @@ button:active {background-color: #88f;}
 /* for main.html */
 #posts {background-color: #cef; padding: 0.2em 0;}
 #posts>div {background-color: #adf; line-height: 100%; margin: 0.3em 0.5em; cursor: pointer;}
+#pages>p {display: inline; cursor: pointer;}
 
 /* for newpost.html */
 #newcontent {line-height: 100%; height: 70vh; width: calc(100vw - 2em);background-color: #cef; resize: none;}
 
+/* for viewpost.html */
 .vote_button {
 	background-repeat: no-repeat;
 	background-position: center;
@@ -111,8 +113,10 @@ button:active {background-color: #88f;}
 	overflow: auto;
 }
 #content {
-	margin-left: 50px;
+	margin-left: 3em;
+    margin-right: 2.5em;
 	overflow: auto;
+    word-break: break-word;
 }
 #vote {
 	float: left;
@@ -130,6 +134,7 @@ button:active {background-color: #88f;}
 #title {
 	font-size: 30px;
 	font-weight: bold;
+    word-break: break-word;
 }
 #vote_count {
 	padding: 0px;
