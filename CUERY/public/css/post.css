@@ -10,7 +10,7 @@ div {height: 100%; margin: 0 auto;} /* margin: 0 auto is for centering */
 p {display: inline-block; margin: 0.2em;}
 a,input,select {line-height: 100%; margin-left: 0.5em;}
 
-button {border: 1px solid rgb(255, 255, 255); border-radius: 0.5em; background-color: rgb(172, 184, 255); transition: background 0.2s;}
+button {border: 1px solid rgb(255, 255, 255); border-radius: 0.5em; background-color: rgb(204, 208, 232); transition: background 0.2s;}
 button:hover {background-color: rgb(90, 132, 250);}
 button:active {background-color: rgb(176, 90, 226);}
 
@@ -282,4 +282,12 @@ div .reminder{
 
 .fixedusername{
     font-weight: bold;
+}
+
+.redirectbody{line-height: 200%; background-color: #ede4f0; overflow-x: hidden;
+    font-family: 'Ubuntu', sans-serif;
+    background-image: url("../img/background.png");
+    background-repeat: no-repeat;
+    background-position: right 100px;
+    background-size: 600px 550px; 
 }
