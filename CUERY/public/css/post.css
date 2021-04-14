@@ -217,6 +217,7 @@ button:active {background-color: #88f;}
   display: block;
   margin-left: auto;
   margin-right: auto;
+  margin-bottom: 1em;
   width: 50%;
   height: 20rem;
   width: 20rem;
@@ -258,4 +259,6 @@ div .reminder{
     padding-bottom: 1.5em;
 }
 
-
+.fixedusername{
+    font-weight: bold;
+}
