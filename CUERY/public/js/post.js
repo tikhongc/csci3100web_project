@@ -79,7 +79,10 @@ fetch('/checkCookie', options).then(res=>res.json())
         document.getElementById("sidebar-username").innerHTML = data.name;
         document.getElementById("sidebar-email").innerHTML = "(" + data.email + ")";
         document.getElementById("sidebar-year").innerHTML = "Year: " + data.year;
-	document.getElementById("fixedusername").innerHTML = data.name;
+	const userUpdateName = document.getElementById("fixedusername");
+        if (userUpdateName){
+            userUpdateName.innerHTML = data.name;
+        }
 
         const options2 = {
 			method: 'GET',
