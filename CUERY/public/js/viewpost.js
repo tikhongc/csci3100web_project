@@ -357,6 +357,10 @@ function deletePostOrComment(target) {
         if(target !== "post") {
             document.getElementById("comment_content_" + target).innerHTML = "<span style='color: rgb(73, 164, 233);'>[COMMENT DELETED BY USER]</span>"
         }
+        else {
+            alert("Post successfully deleted.");
+            window.location.href = "main.html";
+        }
     });
 }
 

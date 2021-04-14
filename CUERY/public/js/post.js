@@ -187,7 +187,11 @@ function AddPost(data) { // data is an object
 	p.appendChild(obj);
 	obj=document.createElement("div");
 	obj.classList.add("text-secondary");
-	obj.innerHTML=data.owner;
+	//parsing date
+	const date = new Date(data.createdAt);
+	var dateString = date.getDay() + "/" + date.getMonth() + "/" + date.getFullYear();
+	obj.innerHTML=data.owner + " on " + dateString;
+	obj.style.fontSize = "10px";
 	p.appendChild(obj);
 	post.appendChild(p);
 	post.setAttribute("onclick","ViewPost('"+data._id+"');");
