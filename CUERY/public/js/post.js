@@ -5,7 +5,7 @@
  */
 
 //timeStamp will be of type Date
-function getElapsedTimeString(timeStamp) {
+function getTimeElapsedString(timeStamp) {
 	const minute = 1000 * 60;
 	const hour = 1000 * 60 * 60;
 	const day = 1000 * 60 * 60 * 24;

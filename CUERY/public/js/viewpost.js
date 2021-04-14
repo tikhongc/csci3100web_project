@@ -152,7 +152,7 @@ function addCommentToList(data, indentation, depth) {
 
     //owner
     var owner = document.createElement("div");
-    owner.innerHTML = data.owner;
+    owner.innerHTML = data.owner + getTimeElapsedString(new Date(data.createdAt));
     element.appendChild(owner);
     owner.style.fontSize = "10px";
     owner.style.lineHeight = "10px";
@@ -423,7 +423,7 @@ if(params.has("postid")) {
 	.then(res=>res.json())
 	.then(data=>{
         document.getElementById("title").innerHTML=data.title;
-        document.getElementById("owner").innerHTML= "Posted by " + data.owner + " " + getElapsedTimeString(new Date(data.createdAt));
+        document.getElementById("owner").innerHTML= "Posted by " + data.owner + " " + getTimeElapsedString(new Date(data.createdAt));
         postOwner = data.owner;
         document.getElementById("text").innerHTML=data.content;
         document.getElementById("vote_count_post").innerHTML=data.votes;
