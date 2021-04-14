@@ -146,8 +146,8 @@ User.post("/forgot", [
 
         if (!user) {
             //account dose not exist!
-            return res.status(401).json({message: 'The email address ' + email + 
-            ' is not associated with any account. Double-check your email address and try again.'});
+            return res.status(401).send('The email address ' + email + 
+            ' is not associated with any account. Double-check your email address and try again.');
          } 
 
        await user.ResetPassword();
@@ -157,7 +157,7 @@ User.post("/forgot", [
        res.status(200).send('Account activation email has been sent,please check your mailbox.');
     }
     catch(error){
-        res.status(500).json({message: error.message});
+        res.status(500).send(error);
     }
 });
 
@@ -166,7 +166,7 @@ User.get('/reset/:token',async (req, res,next) => {
     try{
         const user = await UserModel.findOne({resetPasswordToken: req.params.token, resetPasswordExpires: {$gt: Date.now()}});
         if (!user) {
-            return res.status(401).json({message: 'Password reset token is invalid or has expired.'});
+            return res.status(401).send('Password reset token is invalid or has expired.');
          } 
          res.render('reset',{token: req.params.token});
     }
@@ -178,13 +178,13 @@ User.get('/reset/:token',async (req, res,next) => {
 //Reset password
 User.post('/reset/:token',[
     check('password').not().isEmpty().isLength({min: 8}).withMessage('Must be at least 8 chars long'),
-    check('confirmPassword', 'Passwords do not match').custom((value, {req}) => (value === req.body.password)),
+    check('confirm', 'Passwords do not match').custom((value, {req}) => (value === req.body.password)),
   ],validator,
   async (req, res) => {
     try{
         const user = await UserModel.findOne({resetPasswordToken: req.params.token, resetPasswordExpires: {$gt: Date.now()}});
         if (!user) {
-            return res.status(401).json({message: 'Password reset token is invalid or has expired.'});
+            return res.status(401).send( 'Password reset token is invalid or has expired.');
          } 
          //Set the new password
          user.password = req.body.password;         
@@ -193,7 +193,7 @@ User.post('/reset/:token',[
 
          await user.save();
          ConfirmationEmail(user.email,user.name);
-         res.status(200).json({message: 'Your password has been updated.'});
+         res.status(200).send('Your password has been updated.');
     }
     catch(error){
         res.status(500).json({message: error.message});
