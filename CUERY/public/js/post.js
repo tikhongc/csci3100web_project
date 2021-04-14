@@ -131,7 +131,10 @@ fetch('/checkCookie', options).then(res=>res.json())
         
 function toTitleCase(str) {
 	var arr=str.split(" "),i=0;
-	for(const word of arr)arr[i++]=word[0].toUpperCase()+word.slice(1,word.length);
+	for(const word of arr) {
+		if(word !== "and") arr[i++]=word[0].toUpperCase()+word.slice(1,word.length);
+		else arr[i++]=word;
+	}
 	return arr.join(" ");
 }
 

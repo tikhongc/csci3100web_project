@@ -12,7 +12,7 @@
 		<div id="header"></div>
 			<hr style="margin: 0;"/>
 			<div style="padding-top: 1em; padding: 0.5em;">
-				<div style= "margin-bottom: 0.5em; overflow: auto">
+				<div style= "margin-bottom: 0.5em; overflow: auto; font-size: 13px">
 					<label for="category">Category: </label><select id="category" onchange="ReloadPosts(false);" style="margin-right: 0.2em;">
 						<option value="">All</option>
 					</select>
@@ -20,10 +20,10 @@
 						<option value="">All</option>
 					</select> 
 					<label for="sort">Sort by: </label><select id="sort" onchange="ReloadPosts(true);" style="margin-right: 0.2em;">
-						<option value="timeDsc" selected>Recent First</option>
-						<option value="timeAsc">Oldest First</option>
-						<option value="voteDsc">Top voted</option>
-						<option value="voteAsc">Most downvoted</option>
+						<option value="timeDsc" selected>Newest</option>
+						<option value="timeAsc">Oldest</option>
+						<option value="voteDsc">Most upvote</option>
+						<option value="voteAsc">Most downvote</option>
 						<option value="contDsc">Most controversial</option>
 						<option value="contAsc">Least controversial</option>
 					</select>

@@ -58,7 +58,7 @@ router.get('/posts', async (req, res) => {
                 createdAt: -1
             };
             break;
-        case "voteDes":
+        case "voteDsc":
             sort = {
                 votes: -1,
                 createdAt: -1
@@ -70,8 +70,15 @@ router.get('/posts', async (req, res) => {
                 createdAt: -1
             };
             break;
+        case "contAsc":
+            sort = {
+                controversy: +1,
+                createdAt: -1
+            }
+            break;
         default:
             sort = "-createdAt";
+            break;
     }
 
     //parsing optional queries
