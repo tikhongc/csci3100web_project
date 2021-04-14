@@ -152,7 +152,7 @@ function addCommentToList(data, indentation, depth) {
 
     //owner
     var owner = document.createElement("div");
-    owner.innerHTML = data.owner + getTimeElapsedString(new Date(data.createdAt));
+    owner.innerHTML = data.owner + " " + getTimeElapsedString(new Date(data.createdAt));
     element.appendChild(owner);
     owner.style.fontSize = "10px";
     owner.style.lineHeight = "10px";
