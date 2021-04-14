@@ -27,7 +27,7 @@ const WelcomeEmail = (email, name) => {
 
 const RecoveryEmail = (email,name,link) => {
     Mail.send({
-        to: '1205542199@qq.com',
+        to: email,
         from: 'chiutikhong@yandex.com',
         subject: 'Account Activation Link',
         text:`Hi ${name}!\n 
