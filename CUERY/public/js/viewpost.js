@@ -250,6 +250,7 @@ function addCommentToList(data, indentation, depth) {
     replyTextarea.setAttribute("id", "reply_textarea_" + data._id);
     replyTextarea.setAttribute("rows", "2");
     replyTextarea.setAttribute("placeholder", "Write your comment here...");
+
     replyTextarea.style.padding = "0.5em";
     replyTextarea.style.lineHeight = "1.5em";
     replyTextarea.style.float = "bottom";
@@ -258,9 +259,9 @@ function addCommentToList(data, indentation, depth) {
     replyTextarea.style.marginBottom = "0.5em";
     replyTextarea.style.resize = "none";
     replyTextarea.style.display = "block";
-    replyTextarea.style.backgroundColor = "rgb(196, 229, 252)";
-    replyTextarea.style.border = "transparent";
-    replyTextarea.style.borderRadius = "0.5em";
+    replyTextarea.style.backgroundColor = "rgb(255, 255, 255)";
+    replyTextarea.style.border = "0.1em solid #a4d3f1";
+    replyTextarea.style.borderRadius = "5px";
     replyBox.appendChild(replyTextarea);
 
     //reply toolbox
@@ -325,7 +326,6 @@ function createNewComment() {
     .then(res => res.json())
 	.then((commentPosted) => {
         document.getElementById("comment_editor_textarea").value = "";
-        console.log(commentPosted);
         const element = addCommentToList(commentPosted, 0);
         document.getElementById("comments").appendChild(element);
         element.scrollIntoView(
@@ -368,7 +368,6 @@ function displayReply(target) {
     const replybox = "reply_box_" + target;
     const replyTextarea = "reply_textarea_" + target; 
 
-    console.log(target);
     if(document.getElementById(replybox).style.display === "none") {
         if(openedReplybox) displayReply(openedReplybox);
         document.getElementById(button).innerHTML = "close";
@@ -403,9 +402,7 @@ function replyComment(target) {
     .then(res => {
         document.getElementById("reply_textarea_" + target).value = ""
         displayReply(target); //closing the reply textarea
-        console.log(res);
         const element = addCommentToList(res, 0.5, parseInt(document.getElementById("comment_" + target).dataset.depth) + 1);
-        console.log(document.getElementById("comment_" + target).dataset.depth);
         document.getElementById("children_box_" + target).appendChild(element);
         element.scrollIntoView(
             {

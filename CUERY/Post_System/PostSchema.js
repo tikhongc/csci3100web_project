@@ -13,7 +13,7 @@ const topicList = ["anthropology", "english studies", "fine arts",
 "data science", "biomedical engineering", "laws", "medicine and pharmacy", 
 "nursing", "chinese medicine", "public health", "science", 
 "mathematics", "social science", "economics", "urban studies",
-"psychology", "journalism and communication", "data science"];
+"psychology", "journalism and communication", "data science", "other"];
 
 const PostSchema = mongoose.Schema(
     {

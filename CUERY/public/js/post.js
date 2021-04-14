@@ -74,12 +74,12 @@ fetch('/checkCookie', options).then(res=>res.json())
         window.location.href = "login.html";
     }
     else{   // continue loading if user are verified,  can use the user object received in the response
-        console.log(data);
         document.getElementById("useravatar").src = "data:image/png;base64," + data.avatar.data;
         document.getElementById("sidebar-avatar").src = "data:image/png;base64," + data.avatar.data;
         document.getElementById("sidebar-username").innerHTML = data.name;
         document.getElementById("sidebar-email").innerHTML = "(" + data.email + ")";
         document.getElementById("sidebar-year").innerHTML = "Year: " + data.year;
+	document.getElementById("fixedusername").innerHTML = data.name;
 
         const options2 = {
 			method: 'GET',
@@ -88,7 +88,6 @@ fetch('/checkCookie', options).then(res=>res.json())
 			},
 			body: JSON.stringify({data})
 		};
-		console.log(data._id);
 		fetch("/user/posts/"+data._id,{options2})
 		.then(res=>res.json())
 		.then(data=>{
@@ -97,34 +96,6 @@ fetch('/checkCookie', options).then(res=>res.json())
 			counter++;
 			document.getElementById("sidebar-postnum").innerHTML = "Total Posts: " + counter;	
 		})	
-        
-        /*
-        // fetch topics and categories
-	fetch("/lists/topic",{method:"GET"})
-	.then(res=>res.json())
-	.then(data=>{
-		var option,select=document.getElementById("topic");
-		for(const topic of data){
-			option=document.createElement("option");
-			option.value=topic;
-			option.innerHTML=toTitleCase(topic);
-			select.appendChild(option);
-		}
-		return fetch("/lists/category",{method:"GET"});})
-	.then(res=>res.json())
-	.then(data=>{
-		var option,select=document.getElementById("category");
-		for(const category of data){
-			option=document.createElement("option");
-			option.value=category;
-			option.innerHTML=toTitleCase(category);
-			select.appendChild(option);
-		}
-	})
-	.catch(err=>console.log("Error: unable to fetch information.\n",err));
-        
-	ReloadPosts();
-        */
     }
 });
 }
@@ -224,20 +195,7 @@ function AddPost(data) { // data is an object
 	document.getElementById("posts").appendChild(post);
 	// can add more information
 }
-                /*
-		// test function
-		// addPost({title:"foo",owner:"bar",upvotes:123,downvotes:24});
-		
-			// add posts if scroll reaches bottom
-			window.addEventListener("scroll",function(e){
-				const scroll = (window.scrollY/(document.body.clientHeight-window.innerHeight));
-				console.log(scroll);
-				if(scroll>0.9){ // threshold: 90% scroll
-					console.log("threshold-reached");
-					// do something
-				}
-			});
-		*/
+
 function ReloadPosts(keepPage) {
 	// erase all previous posts and disable page changing
 	document.getElementById("posts").innerHTML="Loading...";
@@ -317,7 +275,7 @@ function toggleSidebar(){
 
 function CreatePost() {
 	var data = {
-		title:document.getElementById("title").value,
+		title:document.getElementById("newtitle").value,
 		category:document.getElementById("category").value,
 		topic:document.getElementById("topic").value,
 		content:document.getElementById("newcontent").value
@@ -331,10 +289,10 @@ function CreatePost() {
             body:JSON.stringify(data)
         };
 	fetch("/posts",options)
-	//.then(res=>res.json())
+	.then(res=>res.json())
 	.then(res=>{
 		alert('Post creation success !');
-		window.location.href = "main.html";
+		window.location.href = "http://localhost:3000/viewpost.html?postid=" + res._id;
 	})
 	.catch(err=>console.log(err));
 }
@@ -378,7 +336,6 @@ function checkUserUpdate(){
     let oldpw = document.getElementById("oldpw").value;
     let pw1 = document.getElementById("password").value;
     let pw2 = document.getElementById("newpw2").value;
-    console.log(oldpw.length);
     if (oldpw.length === 0){
         alert("Old password is needed.");
         return false;

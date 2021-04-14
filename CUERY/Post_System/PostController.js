@@ -207,10 +207,7 @@ router.patch('/posts/:id', authentication, async (req, res) => {
  *       "action": "upvote" (this can be "upvote", "downvote", or "cancel")
  *   }
  */
- router.patch('/posts/vote/:id', async (req, res) => {
-//router.patch('/posts/vote/:id',authentication, async (req, res) => {
-    //DEBUG
-    console.log(req.body);
+router.patch('/posts/vote/:id',authentication, async (req, res) => {
     const {owner, action} = req.body;
 
     try {
@@ -282,9 +279,6 @@ router.patch('/posts/:id', authentication, async (req, res) => {
             }
         }
         else {
-            //DEBUG
-            console.log("owner", action);
-            console.log("action", owner);
             return res.status(400).send({ error: "Invalid action. (Use cancel, upvote, or downvote)" }); 
         }
     } catch(error) {
