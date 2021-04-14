@@ -1,5 +1,5 @@
 /* for newpost.html, viewpost.html and main.html */
-body {line-height: 200%; background-color: #8cf; overflow-x: hidden;
+body {line-height: 200%; background-color: #ede4f0; overflow-x: hidden;
     font-family: 'Ubuntu', sans-serif;}
 div {height: 100%; margin: 0 auto;} /* margin: 0 auto is for centering */
 p {display: inline-block; margin: 0.2em;}
