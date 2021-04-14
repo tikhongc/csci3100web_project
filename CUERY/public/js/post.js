@@ -4,6 +4,40 @@
  * and open the template in the editor.
  */
 
+//timeStamp will be of type Date
+function getElapsedTimeString(timeStamp) {
+	const minute = 1000 * 60;
+	const hour = 1000 * 60 * 60;
+	const day = 1000 * 60 * 60 * 24;
+    const now = new Date(Date.now());
+	const timeElapsed = Date.now() - timeStamp;
+
+	if(timeElapsed < minute) return "just now";
+	if(timeElapsed < hour) {
+		const temp = Math.floor(timeElapsed / minute);
+		if(temp === 1) return temp + " minute ago";
+		return temp + " minutes ago";
+	}
+    if(timeElapsed < day) {
+		const temp = Math.floor(timeElapsed / hour);
+		if(temp === 1) return temp + " hour ago";
+		return temp + " hours ago";
+	}
+    if(timeElapsed < day * 30) {
+		const temp = Math.floor(timeElapsed / day);
+		if(temp === 1) return temp + "day ago";
+		return temp + " days ago";
+	}
+    if(timeElapsed < day * 365) {
+		const temp = (now.getMonth() - timeStamp.getMonth());
+		if(temp === 1) return temp + " month ago";
+		return temp + " months ago";
+	} 
+	const temp = (now.getFullYear() - timeStamp.getFullYear());
+	if(temp === 1) return temp + " year ago";
+    return  temp + " years ago";
+}
+
 function getCookie(cname) {
   var name = cname + "=";
   var decodedCookie = decodeURIComponent(document.cookie);

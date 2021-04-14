@@ -423,7 +423,7 @@ if(params.has("postid")) {
 	.then(res=>res.json())
 	.then(data=>{
         document.getElementById("title").innerHTML=data.title;
-        document.getElementById("owner").innerHTML= "Posted by " + data.owner;
+        document.getElementById("owner").innerHTML= "Posted by " + data.owner + " " + getElapsedTimeString(new Date(data.createdAt));
         postOwner = data.owner;
         document.getElementById("text").innerHTML=data.content;
         document.getElementById("vote_count_post").innerHTML=data.votes;
