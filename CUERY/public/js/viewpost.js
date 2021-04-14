@@ -1,7 +1,6 @@
 var postID;
 var postOwner;
 var voteStatus = {};
-var originalVoteCount;
 var username;
 var openedReplybox;
 
@@ -152,7 +151,7 @@ function addCommentToList(data, indentation, depth) {
 
     //owner
     var owner = document.createElement("div");
-    owner.innerHTML = data.owner;
+    owner.innerHTML = data.owner + " " + getTimeElapsedString(new Date(data.createdAt));
     element.appendChild(owner);
     owner.style.fontSize = "10px";
     owner.style.lineHeight = "10px";
@@ -357,6 +356,10 @@ function deletePostOrComment(target) {
         if(target !== "post") {
             document.getElementById("comment_content_" + target).innerHTML = "<span style='color: rgb(73, 164, 233);'>[COMMENT DELETED BY USER]</span>"
         }
+        else {
+            alert("Post successfully deleted.");
+            window.location.href = "main.html";
+        }
     });
 }
 
@@ -423,11 +426,12 @@ if(params.has("postid")) {
 	.then(res=>res.json())
 	.then(data=>{
         document.getElementById("title").innerHTML=data.title;
-        document.getElementById("owner").innerHTML= "Posted by " + data.owner;
+        document.getElementById("owner").innerHTML= "Posted by " + data.owner + " " + getTimeElapsedString(new Date(data.createdAt));
         postOwner = data.owner;
         document.getElementById("text").innerHTML=data.content;
         document.getElementById("vote_count_post").innerHTML=data.votes;
-        originalVoteCount = data.votes;
+        document.getElementById("category").innerHTML = toTitleCase(data.category);
+        document.getElementById("topic").innerHTML = toTitleCase(data.topic);
     })
     .then(() => {
         //fetching username

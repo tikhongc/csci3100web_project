@@ -50,6 +50,8 @@ const CommentSchema = mongoose.Schema({
         type: Number,
         default: 0
     }
+}, {
+    timestamps: true
 });
 
 CommentSchema.pre('save', async function(next) {

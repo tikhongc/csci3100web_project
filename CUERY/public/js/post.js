@@ -4,6 +4,40 @@
  * and open the template in the editor.
  */
 
+//timeStamp will be of type Date
+function getTimeElapsedString(timeStamp) {
+	const minute = 1000 * 60;
+	const hour = 1000 * 60 * 60;
+	const day = 1000 * 60 * 60 * 24;
+    const now = new Date(Date.now());
+	const timeElapsed = Date.now() - timeStamp;
+
+	if(timeElapsed < minute) return "just now";
+	if(timeElapsed < hour) {
+		const temp = Math.floor(timeElapsed / minute);
+		if(temp === 1) return temp + " minute ago";
+		return temp + " minutes ago";
+	}
+    if(timeElapsed < day) {
+		const temp = Math.floor(timeElapsed / hour);
+		if(temp === 1) return temp + " hour ago";
+		return temp + " hours ago";
+	}
+    if(timeElapsed < day * 30) {
+		const temp = Math.floor(timeElapsed / day);
+		if(temp === 1) return temp + "day ago";
+		return temp + " days ago";
+	}
+    if(timeElapsed < day * 365) {
+		const temp = (now.getMonth() - timeStamp.getMonth());
+		if(temp === 1) return temp + " month ago";
+		return temp + " months ago";
+	} 
+	const temp = (now.getFullYear() - timeStamp.getFullYear());
+	if(temp === 1) return temp + " year ago";
+    return  temp + " years ago";
+}
+
 function getCookie(cname) {
   var name = cname + "=";
   var decodedCookie = decodeURIComponent(document.cookie);
@@ -131,6 +165,7 @@ function AddPost(data) { // data is an object
 	var post=document.createElement("div");
 	post.style.whiteSpace = "nowrap";
 	post.style.overflow = "hidden";
+
 	var p=document.createElement("p");
 	var obj=document.createElement("div");
 	if(data.votes === 0) colorValue = "grey";
@@ -139,21 +174,53 @@ function AddPost(data) { // data is an object
 	var voteCount;
 	if(Math.abs(data.votes) > 1000) {
 		voteCount = (Math.floor(data.votes / 100) / 10).toString() + "k";
-		
 	}
 	else voteCount = data.votes.toString();
 	p.innerHTML = "<span style='color: " + colorValue + ";'>" + voteCount + "</span>";
-	p.style.width = "2em";
-	p.style.textAlign = "right";
-	p.style.marginRight = "0.5em";
+	p.style.width = "3em";
+	p.style.textAlign = "center";
+	p.style.margin = "0 auto";
+	p.style.marginRight = "0.2em";
 	p.style.fontSize="200%";
 	post.appendChild(p);
+
 	p=document.createElement("p");
 	obj.innerHTML=data.title;
+	obj.style.marginBottom = "0.4em";
 	p.appendChild(obj);
+
 	obj=document.createElement("div");
 	obj.classList.add("text-secondary");
-	obj.innerHTML=data.owner;
+	//parsing date
+	const date = new Date(data.createdAt);
+	var dateString = date.getDay() + "/" + date.getMonth() + "/" + date.getFullYear();
+
+	//adding category tag
+	category = document.createElement("div");
+	category.setAttribute("class", "tag");
+	category.setAttribute("id", "category_" + data._id);
+	category.innerHTML = toTitleCase(data.category);
+	category.style.marginRight = "0.5em";
+	obj.appendChild(category);
+
+	//adding topic tag
+	topic = document.createElement("div");
+	topic.setAttribute("class", "tag");
+	topic.setAttribute("id", "topic_" + data._id);
+	topic.innerHTML = toTitleCase(data.topic);
+	topic.style.marginRight = "0.5em";
+	obj.appendChild(topic);
+
+	obj.insertAdjacentHTML("beforeend", "by " + data.owner + " on " + dateString);
+
+	//"<div class='tag' id='category_" + data._id + "'>category</div> <div class='tag' id='topic_" + data._id + "'>topic</div> 
+
+	//parsing tags
+	//console.log(data._id);
+	//console.log(document.getElementById("category_" + data._id));// = "data.category";
+	//document.getElementById("topic_" + data._id).innerHTML = data.topic;
+
+	obj.style.fontSize = "10px";
 	p.appendChild(obj);
 	post.appendChild(p);
 	post.setAttribute("onclick","ViewPost('"+data._id+"');");

@@ -1,10 +1,11 @@
 /* for newpost.html, viewpost.html and main.html */
-body {line-height: 200%; background-color: #8cf; overflow-x: hidden;}
+body {line-height: 200%; background-color: #ede4f0; overflow-x: hidden;
+    font-family: 'Ubuntu', sans-serif;}
 div {height: 100%; margin: 0 auto;} /* margin: 0 auto is for centering */
 p {display: inline-block; margin: 0.2em;}
 a,input,select {line-height: 100%; margin-left: 0.5em;}
 
-button {border: 1px solid blue; border-radius: 0.5em; background-color: #def; transition: background 0.2s;}
+button {border: 1px solid rgb(255, 255, 255); border-radius: 0.5em; background-color: #def; transition: background 0.2s;}
 button:hover {background-color: #8cf;}
 button:active {background-color: #88f;}
 
@@ -79,10 +80,35 @@ button:active {background-color: #88f;}
 }
 
 /* for main.html */
-#posts {background-color: #cef; padding: 0.2em 0;}
-#posts>div {background-color: #adf; line-height: 100%; margin: 0.3em 0.5em; cursor: pointer;}
-#pages>p {display: inline; cursor: pointer;}
-
+#posts {background-color: #fff; 
+    padding: 0.2em 0;
+    border-radius:10px;
+    box-shadow: 0px 11px 35px 2px rgba(0, 0, 0, 0.14);
+}
+#posts>div {background-color: #e8f8f97d; line-height: 100%;
+    border-radius:10px;
+    margin: 0.3em 0.5em; 
+    cursor: pointer;
+}
+#posts>div:hover:not(.active) {
+ background-color: #cbf6ff;
+ border-radius: 10px;
+}
+#pages>p {
+    color: black;
+    padding: 5px 15px;
+    text-decoration: none;
+  }
+#pages>p.active {
+    background-color: #adf1b0;
+    color: white;
+    border-radius: 10px;
+}
+  
+#pages>p:hover:not(.active) {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+}
 /* for newpost.html */
 #newcontent {line-height: 100%; height: 70vh; width: calc(100vw - 2em);background-color: #cef; resize: none;}
 
@@ -128,11 +154,25 @@ button:active {background-color: #88f;}
 }
 #owner {
 	font-size: 10px;
-	font-style: italic;
 	line-height: 20px;
+}
+#tagbox {
+    margin: 0;
+    padding: 0;
+    line-height: 2em;
+}
+.tag {
+    display: inline;
+    background-color: rgb(46, 46, 46);
+    border-radius: 0.5em;
+    color: white;
+    font-size: 10px;
+    padding: 0.3em;
+    margin: 0;
 }
 #title {
 	font-size: 30px;
+    margin-bottom: 0.5em;
 	font-weight: bold;
     word-break: break-word;
 }
