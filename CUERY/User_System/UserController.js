@@ -196,7 +196,7 @@ User.post('/reset/:token',[
          res.status(200).send('Your password has been updated.');
     }
     catch(error){
-        res.status(500).json({message: error.message});
+        res.status(500).send(error);
     }
 })
 
