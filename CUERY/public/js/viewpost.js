@@ -133,7 +133,7 @@ function updateStatus(target) {
 }
 
 //add one comment to list
-function AddCommentToList(data, indentation) {
+function addCommentToList(data, indentation) {
     var element;
     
     //element
@@ -286,7 +286,7 @@ function AddCommentToList(data, indentation) {
         if(children.length) {
             for(const comment of children) {
                 if(!comment.deleted) {
-                    childrenBox.appendChild(AddCommentToList(comment, 0.5));
+                    childrenBox.appendChild(addCommentToList(comment, 0.5));
                 }
             };
         }
@@ -321,7 +321,8 @@ function createNewComment() {
     .then(res => res.json())
 	.then((commentPosted) => {
         document.getElementById("comment_editor_textarea").value = "";
-        AddCommentToList(commentPosted);
+        console.log(commentPosted);
+        document.getElementById("comments").appendChild(addCommentToList(commentPosted));
 	})
 	.catch(err => console.log(err));
 }
@@ -376,9 +377,11 @@ function replyComment(target) {
         body: JSON.stringify(newComment)
     }).then(res => res.json())
     .then(res => {
-        console.log(res.body);
         document.getElementById("reply_textarea_" + target).value = ""
-        displayReply(target);
+        displayReply(target); //closing the reply textarea
+        console.log(res);
+        document.getElementById("children_box_" + target).appendChild(addCommentToList(res, 0.5));
+        
     })
 }
 
@@ -434,7 +437,7 @@ if(params.has("postid")) {
                         document.getElementById("comments").innerHTML="";
                         for(const comment of data) {
                             if(!comment.deleted) {
-                                document.getElementById("comments").appendChild(AddCommentToList(comment, 0));
+                                document.getElementById("comments").appendChild(addCommentToList(comment, 0));
                             }
                         };
                     }
