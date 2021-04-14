@@ -10,9 +10,9 @@ div {height: 100%; margin: 0 auto;} /* margin: 0 auto is for centering */
 p {display: inline-block; margin: 0.2em;}
 a,input,select {line-height: 100%; margin-left: 0.5em;}
 
-button {border: 1px solid rgb(255, 255, 255); border-radius: 0.5em; background-color: #def; transition: background 0.2s;}
-button:hover {background-color: #8cf;}
-button:active {background-color: #88f;}
+button {border: 1px solid rgb(255, 255, 255); border-radius: 0.5em; background-color: rgb(172, 184, 255); transition: background 0.2s;}
+button:hover {background-color: rgb(90, 132, 250);}
+button:active {background-color: rgb(176, 90, 226);}
 
 .logoutbutton{
     height: 20px;
