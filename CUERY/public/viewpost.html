@@ -8,28 +8,33 @@
 	<link rel="stylesheet" href="./css/post.css">
 </head>
 <body>
-	<div id="header"></div>
-	<hr style="margin: 0;"/>
-	<div style="padding: 0.5em 1em;">
-		<div id="contentbox">
-			<div id="vote">
-				<button class="vote_button upvote_button" id="upvote_button_post" onclick="upvote('post')"></button>
-				<div id="vote_count_post">0</div>
-				<button class="vote_button downvote_button" id="downvote_button_post" onclick="downvote('post')"></button>
+	<div style="width:700px; padding: 0;">
+		<div id="header"></div>
+		<hr style="margin: 0;"/>
+		<div style="padding-top: 1em;">
+			<div id="contentbox">
+				<div id="vote">
+					<button class="vote_button upvote_button" id="upvote_button_post" onclick="upvote('post')"></button>
+					<div id="vote_count_post">0</div>
+					<button class="vote_button downvote_button" id="downvote_button_post" onclick="downvote('post')"></button>
+				</div>
+				<div id="content">
+					<div id="owner">loading...</div>
+					<div id="tagbox">
+						<div class="tag" id="category">category</div>
+						<div class="tag" id="topic">topic</div>
+					</div>
+					<div id="title">loading...</div>
+					<div id="text">loading...</div>
+				</div>
 			</div>
-			<div id="content">
-				<div id="owner">loading...</div>
-				<div id="title">loading...</div>
-				<div id="text">loading...</div>
-			</div>
-		</div>
 
-		<div id="comment_editor">
-			<textarea id="comment_editor_textarea" rows="5" placeholder="Write your comment here..."></textarea>
-			<button type="button" onclick="createNewComment()" style="float: right;">Submit</button>
+			<div id="comment_editor">
+				<textarea id="comment_editor_textarea" rows="5" placeholder="Write your comment here..."></textarea>
+				<button type="button" onclick="createNewComment()" style="float: right;">Submit</button>
+			</div>
+			<div id="comments"></div>
 		</div>
-	
-		<div id="comments"></div>
 	</div>
 	
 	<script src="./js/post.js"></script>

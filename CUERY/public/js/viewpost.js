@@ -1,7 +1,6 @@
 var postID;
 var postOwner;
 var voteStatus = {};
-var originalVoteCount;
 var username;
 var openedReplybox;
 
@@ -431,7 +430,8 @@ if(params.has("postid")) {
         postOwner = data.owner;
         document.getElementById("text").innerHTML=data.content;
         document.getElementById("vote_count_post").innerHTML=data.votes;
-        originalVoteCount = data.votes;
+        document.getElementById("category").innerHTML = toTitleCase(data.category);
+        document.getElementById("topic").innerHTML = toTitleCase(data.topic);
     })
     .then(() => {
         //fetching username
