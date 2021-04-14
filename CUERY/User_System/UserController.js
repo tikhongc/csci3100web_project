@@ -143,8 +143,8 @@ User.post("/forgot", [
          } 
 
        await user.ResetPassword();
-       let link = "http://" + req.headers.host + "/api/recovery/reset/" + user.resetPasswordToken;
-       console.log(user.resetPasswordToken);
+       let link = "http://" + req.headers.host + "/reset/" + user.resetPasswordToken;
+       console.log(link);
        RecoveryEmail(user.email,user.name,link);
        res.status(200).send('Account activation email has been sent,please check your mailbox.');
     }
@@ -154,13 +154,13 @@ User.post("/forgot", [
 });
 
 //get passwordReset
-User.get('/reset/:token',async (req, res) => {
+User.get('/reset/:token',async (req, res,next) => {
     try{
         const user = await UserModel.findOne({resetPasswordToken: req.params.token, resetPasswordExpires: {$gt: Date.now()}});
         if (!user) {
             return res.status(401).json({message: 'Password reset token is invalid or has expired.'});
          } 
-            res.send(user);
+         res.render('reset',{token: req.params.token});
     }
     catch(error){
         res.status(400).send(error);
