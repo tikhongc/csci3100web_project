@@ -46,7 +46,23 @@ fetch('/checkCookie', options).then(res=>res.json())
         document.getElementById("sidebar-username").innerHTML = data.name;
         document.getElementById("sidebar-email").innerHTML = "(" + data.email + ")";
         document.getElementById("sidebar-year").innerHTML = "Year: " + data.year;
-        
+
+        const options2 = {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({data})
+		};
+		console.log(data._id);
+		fetch("/user/posts/"+data._id,{options2})
+		.then(res=>res.json())
+		.then(data=>{
+			let counter = 0;
+			for (let i = 0; i < data.length; i++) 
+			counter++;
+			document.getElementById("sidebar-postnum").innerHTML = "Total Posts: " + counter;	
+		})	
         
         /*
         // fetch topics and categories
@@ -84,7 +100,32 @@ function toTitleCase(str) {
 	for(const word of arr)arr[i++]=word[0].toUpperCase()+word.slice(1,word.length);
 	return arr.join(" ");
 }
-              
+
+   function Post_profile() {
+	fetch('/checkCookie', options).then(res=>res.json())
+	.then(data=>{
+		if (data.answer === 'NA'){
+			alert("Please login first : )");
+			window.location.href = "login.html";
+		}
+		else{   
+			const options2 = {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({data})
+			};
+			console.log(data._id);
+			fetch("/user/posts/"+data._id,{options2})
+			.then(res=>res.json())
+			.then(data=>{
+			   document.getElementById("posts").innerHTML="";
+			   for(const post of data)AddPost(post);
+			})
+		}
+	});
+ }           
 function ViewPost(postid) {window.location="/viewpost.html?postid="+postid;}
 function AddPost(data) { // data is an object
 	var post=document.createElement("div");
@@ -199,6 +240,10 @@ function toProfile(){
 
 function toMain(){
     window.location.href = "main.html";
+}
+
+function toPost(){
+    window.location.href = "post-profile.html";
 }
         
 function toggleSidebar(){
