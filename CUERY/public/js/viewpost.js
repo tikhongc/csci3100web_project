@@ -149,7 +149,6 @@ function addCommentToList(data, indentation) {
     var owner = document.createElement("div");
     owner.innerHTML = data.owner;
     element.appendChild(owner);
-
     owner.style.fontSize = "10px";
     owner.style.lineHeight = "10px";
 
@@ -299,7 +298,6 @@ function addCommentToList(data, indentation) {
         voteStatus[data._id] = result.status;
         updateStatus(data._id);
     });
-    //document.getElementById("comments").appendChild(element);
 
     return element;
 }
@@ -322,7 +320,15 @@ function createNewComment() {
 	.then((commentPosted) => {
         document.getElementById("comment_editor_textarea").value = "";
         console.log(commentPosted);
-        document.getElementById("comments").appendChild(addCommentToList(commentPosted));
+        const element = addCommentToList(commentPosted, 0);
+        document.getElementById("comments").appendChild(element);
+        element.scrollIntoView(
+            {
+                behavior: "smooth",
+                block: "start",
+                inline: "nearest"
+            }
+        );
 	})
 	.catch(err => console.log(err));
 }
@@ -380,8 +386,15 @@ function replyComment(target) {
         document.getElementById("reply_textarea_" + target).value = ""
         displayReply(target); //closing the reply textarea
         console.log(res);
-        document.getElementById("children_box_" + target).appendChild(addCommentToList(res, 0.5));
-        
+        const element = addCommentToList(res, 0.5);
+        document.getElementById("children_box_" + target).appendChild(element);
+        element.scrollIntoView(
+            {
+                behavior: "smooth",
+                block: "start",
+                inline: "nearest"
+            }
+        );
     })
 }
 
