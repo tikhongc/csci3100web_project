@@ -12,25 +12,15 @@ and open the template in the editor.
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
 	<link rel="stylesheet" href="/css/post.css">
         <style>
-            
-		body { line-height: 200%; background-color: #8cf;}
-		div {height: 100%; margin: 0 auto;} 
-		input,label {line-height: 130%;}
-                
-		button {border: 1px solid brown; border-radius: 0.5em; background-color: #def; transition: background 0.2s;}
-		button:hover {background-color: #8cf;}
-		button:active {background-color: #88f;}
-		
-		#redirect {color: blue; cursor: pointer;} 
-              
-	</style>
+            div .newpw2 {line-height: 120%;}
+        </style>
 </head>
 <body>
     <div id="header"></div>
     <hr style="margin: 0;"/>
-	<div style="max-width: 600px;">
+	<div style="max-width: 800px;">
 		<div style="background-color: #eee; width: 90%; display: flex; align-items: center;">
-			<div style="max-height: 620px; padding: 5%;">
+			<div style="max-height: 640px; padding: 5%;">
 				<h1 style="text-align: center;">Change Profile</h1>
 				<br/>
                                 <div class="reminder">
@@ -42,7 +32,7 @@ and open the template in the editor.
                                         <table>
                                             <tr>
                                         	<td> <label for="name">Username:&nbsp;</label> </td>
-                                        	<td> <input type="text" id="name" name="name" placeholder="3-10 characters"/> </td>
+                                                <td> <div id="fixedusername" class="fixedusername"></div> </td>
                                             </tr>
 						<tr>
 							<td> <label for="email">Email:&nbsp;</label> </td>
@@ -57,7 +47,7 @@ and open the template in the editor.
 							<td> <input type="password" id="password" name="password" placeholder="8-18 characters"/> </td>
 						</tr>
                                                 <tr>
-							<td> <label for="newpw2">Confirm<br/>Password:&nbsp;</label> </td>
+                                                    <td><div class="newpw2"><label for="newpw2">Confirm<br/>Password:&nbsp;</label></div> </td>
 							<td> <input type="password" id="newpw2" name="newpw2"/> </td>
 						</tr>
                                          <tr>
@@ -99,9 +89,6 @@ and open the template in the editor.
 				case "1":
 					alert("Update Info Error. (Incorrect password)");
 					break;
-				case "2":
-					alert("Update Info Error. (Please use another username)");
-                                        break;
                                 case "3":
 					alert("Update Info Error. (Your email has already registered)");
                                         break;  
