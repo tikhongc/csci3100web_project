@@ -375,20 +375,13 @@ function updateUser(){
 
 function checkUserUpdate(){
     let email = document.getElementById("email").value;
-    let name = document.getElementById("name").value;
     let oldpw = document.getElementById("oldpw").value;
     let pw1 = document.getElementById("password").value;
     let pw2 = document.getElementById("newpw2").value;
-			
+    console.log(oldpw.length);
     if (oldpw.length === 0){
         alert("Old password is needed.");
         return false;
-    }
-    if (name.length !== 0){
-        if (name.length < 3 || name.length > 10){
-            alert("Username must contain 3-10 characters.");
-            return false;
-        }   
     }
     if (pw1.length !== 0){
         if (pw1.length < 8 || pw1.length > 18){
