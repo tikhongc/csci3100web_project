@@ -178,6 +178,7 @@ User.get('/reset/:token',async (req, res,next) => {
 //Reset password
 User.post('/reset/:token',[
     check('password').not().isEmpty().isLength({min: 8}).withMessage('Must be at least 8 chars long'),
+        check('confirm', 'Passwords do not match').custom((value, {req}) => (value === req.body.password)),
   ],validator,
   async (req, res) => {
     try{
