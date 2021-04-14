@@ -12,20 +12,20 @@
 		<div id="header"></div>
 			<hr style="margin: 0;"/>
 			<div style="padding: 0.5em;">
-				<div style="margin-bottom: 0.5em;">
-					<label for="category">Category: </label><select id="category" onchange="ReloadPosts(false);">
+				<div style= "margin-bottom: 0.5em; overflow: auto">
+					<label for="category">Category: </label><select id="category" onchange="ReloadPosts(false);" style="margin-right: 0.2em;">
 						<option value="">All</option>
-					</select>,
-					<label for="topic">Topic: </label><select id="topic" onchange="ReloadPosts(false);">
+					</select>
+					<label for="topic">Topic: </label><select id="topic" onchange="ReloadPosts(false);" style="margin-right: 0.2em;">
 						<option value="">All</option>
-					</select>,
-					<label for="sort">Sort by: </label><select id="sort" onchange="ReloadPosts(true);">
-						<option value="timeDsc" selected>Time, descending</option>
-						<option value="timeAsc">Time, ascending</option>
-						<option value="voteDsc">Votes, descending</option>
-						<option value="voteAsc">Votes, ascending</option>
-						<option value="contDsc">Controversy, descending</option>
-						<option value="contAsc">Controversy, ascending</option>
+					</select> 
+					<label for="sort">Sort by: </label><select id="sort" onchange="ReloadPosts(true);" style="margin-right: 0.2em;">
+						<option value="timeDsc" selected>Recent First</option>
+						<option value="timeAsc">Oldest First</option>
+						<option value="voteDsc">Top voted</option>
+						<option value="voteAsc">Most downvoted</option>
+						<option value="contDsc">Most controversial</option>
+						<option value="contAsc">Least controversial</option>
 					</select>
 					<button style="float: right;" onclick="window.location='/newpost.html';">Add new post</button>
 				</div>
