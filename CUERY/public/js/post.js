@@ -123,9 +123,10 @@ function ReloadPosts(keepPage) {
 	// erase all previous posts and disable page changing
 	document.getElementById("posts").innerHTML="Loading...";
 	document.getElementById("pages").innerHTML="&nbsp;1";
+	if(!keepPage)history.pushState({page:1},"page 1","?page=1");
 	
 	const query = new URLSearchParams(window.location.search);
-	const page=query.has("page")?query.get("page"):"1";
+	const page=(keepPage&&query.has("page"))?query.get("page"):"1";
 	const limit=10; // temporary value
 	const category=document.getElementById("category").value;
 	const topic=document.getElementById("topic").value;
@@ -142,13 +143,16 @@ function ReloadPosts(keepPage) {
 	.then(res=>res.text())
 	.then(count=>{
 		document.getElementById("pages").innerHTML="";
-		var a,pages=document.getElementById("pages");
+		var p,pages=document.getElementById("pages");
 		const pageCnt=Math.ceil(count/limit);
 		for(let i=1;i<=pageCnt;++i){
-			a=document.createElement("a");
-			a.innerHTML=i;
-			a.setAttribute("href","/main.html?page="+i);
-			pages.appendChild(a);
+			p=document.createElement("p");
+			p.innerHTML=i;
+			p.addEventListener("click",()=>{
+				history.pushState({page:i},"page "+i,"?page="+i);
+				ReloadPosts(true);
+			});
+			pages.appendChild(p);
 		}
 	})
 	.catch(err=>console.log("Error: unable to fetch posts and/or pages.\n",err));
