@@ -121,6 +121,15 @@ User.post('/logout',authentication, async(req,res)=>{
    }
 })
 
+//get passwordReset
+User.get('/forgot',async (req, res,next) => {
+    try{
+         res.render('forgot');
+    }
+    catch(error){
+        res.status(400).send(error);
+    }
+})
 
 //User recovery
 const { check  } = require('express-validator');
