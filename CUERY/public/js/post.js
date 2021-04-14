@@ -74,7 +74,6 @@ fetch('/checkCookie', options).then(res=>res.json())
         window.location.href = "login.html";
     }
     else{   // continue loading if user are verified,  can use the user object received in the response
-        console.log(data);
         document.getElementById("useravatar").src = "data:image/png;base64," + data.avatar.data;
         document.getElementById("sidebar-avatar").src = "data:image/png;base64," + data.avatar.data;
         document.getElementById("sidebar-username").innerHTML = data.name;
@@ -88,7 +87,6 @@ fetch('/checkCookie', options).then(res=>res.json())
 			},
 			body: JSON.stringify({data})
 		};
-		console.log(data._id);
 		fetch("/user/posts/"+data._id,{options2})
 		.then(res=>res.json())
 		.then(data=>{
@@ -378,7 +376,6 @@ function checkUserUpdate(){
     let oldpw = document.getElementById("oldpw").value;
     let pw1 = document.getElementById("password").value;
     let pw2 = document.getElementById("newpw2").value;
-    console.log(oldpw.length);
     if (oldpw.length === 0){
         alert("Old password is needed.");
         return false;

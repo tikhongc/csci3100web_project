@@ -326,7 +326,6 @@ function createNewComment() {
     .then(res => res.json())
 	.then((commentPosted) => {
         document.getElementById("comment_editor_textarea").value = "";
-        console.log(commentPosted);
         const element = addCommentToList(commentPosted, 0);
         document.getElementById("comments").appendChild(element);
         element.scrollIntoView(
@@ -369,7 +368,6 @@ function displayReply(target) {
     const replybox = "reply_box_" + target;
     const replyTextarea = "reply_textarea_" + target; 
 
-    console.log(target);
     if(document.getElementById(replybox).style.display === "none") {
         if(openedReplybox) displayReply(openedReplybox);
         document.getElementById(button).innerHTML = "close";
@@ -404,9 +402,7 @@ function replyComment(target) {
     .then(res => {
         document.getElementById("reply_textarea_" + target).value = ""
         displayReply(target); //closing the reply textarea
-        console.log(res);
         const element = addCommentToList(res, 0.5, parseInt(document.getElementById("comment_" + target).dataset.depth) + 1);
-        console.log(document.getElementById("comment_" + target).dataset.depth);
         document.getElementById("children_box_" + target).appendChild(element);
         element.scrollIntoView(
             {
