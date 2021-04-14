@@ -270,15 +270,6 @@ User.post('/update',authentication, upload.single('avatar'),async(req,res,next)=
     if (!isMatch){
         return res.redirect("/userupdate.html?error=1")
     }
-    
-    if (req.body.name !== ""){
-        const user = await UserModel.findOne({ name : req.body.name });
-        if (user){
-            if (user.name !== req.user.name){
-                return res.redirect("/userupdate.html?error=2")
-            }
-        }
-    }
     if (req.body.email !== ""){
         const useremail = await UserModel.findOne({ email : req.body.email });
         if (useremail){
@@ -292,9 +283,6 @@ User.post('/update',authentication, upload.single('avatar'),async(req,res,next)=
     const updateUser = {
         year: req.body.year
     };
-    if (req.body.name !== ""){
-        updateUser["name"] = req.body.name;
-    }
     if (req.body.bio !== ""){
         updateUser["bio"] = req.body.bio;
     }
@@ -319,48 +307,6 @@ User.post('/update',authentication, upload.single('avatar'),async(req,res,next)=
         res.redirect("user.html?success");
     })
 });
-/*
-//update user by id
-User.post('/update',authentication, upload.single('avatar'),async(req,res,next)=>{
-    //only allow to update the atrribute included in user model
-    console.log(req.user);
-    var updateuser = {
-        name: req.body.name,
-        email: req.body.email,
-        bio: req.body.bio,
-        password: req.body.password,
-        oldpw: req.body.oldpw,
-        year: req.body.year,
-        avatar:{
-            data: fs.readFileSync(path.join("./CUERY/User_System/uploads/" + req.file.filename)),
-            contentType: req.file.mimetype
-        }
-    }
-    
-    const up = Object.keys(obj);
-    const allowupdate=['name','password','year','email','bio','pre','avatar'];//and 
-    const valid = up.every((update)=>{
-        return allowupdate.includes(update);
-     })    
-     if(!valid){
-        res.status(400);
-        return res.send('Invalid updates.')
-    }
-    //update code
-    try{
-        // allow to update many times
-        up.forEach((update)=>{
-         req.user[update]=obj[update];
-        })
-        await req.user.save();
-        res.status(200);
-        res.send(req.user);
-    }catch(error){
-        res.status(400);//bad request
-        res.send(error);
-    }
-})
-*/
 
 //only server-side allowed management:
 
