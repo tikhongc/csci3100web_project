@@ -137,7 +137,7 @@ const validator = require('./method/validator');
 //forgot password request
 User.post("/forgot", [
     check('email').isEmail().withMessage('Enter a valid email address'),
-    check('email').not().isEmpty(),
+    check('email').not().isEmpty().withMessage('Email can not be empty'),
   ],validator,
   async (req, res) => {
     try{
