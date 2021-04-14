@@ -85,10 +85,14 @@ button:active {background-color: #88f;}
     border-radius:10px;
     box-shadow: 0px 11px 35px 2px rgba(0, 0, 0, 0.14);
 }
-#posts>div {background-color: #cbf6ff; line-height: 100%;
-     border-radius:10px;
-     margin: 0.3em 0.5em; 
-     cursor: pointer;
+#posts>div {background-color: #e8f8f97d; line-height: 100%;
+    border-radius:10px;
+    margin: 0.3em 0.5em; 
+    cursor: pointer;
+}
+#posts>div:hover:not(.active) {
+ background-color: #cbf6ff;
+ border-radius: 10px;
 }
 #pages>p {
     color: black;
