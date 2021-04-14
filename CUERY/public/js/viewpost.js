@@ -3,6 +3,7 @@ var postOwner;
 var voteStatus = {};
 var originalVoteCount;
 var username;
+var openedReplybox;
 
 //function definitions
 async function upvote(target) {
@@ -133,17 +134,21 @@ function updateStatus(target) {
 }
 
 //add one comment to list
-function addCommentToList(data, indentation) {
+function addCommentToList(data, indentation, depth) {
+    if(!depth) depth = 1;
+
     var element;
     
     //element
     element = document.createElement("div");
+    element.setAttribute("data-depth", depth.toString());
+    element.setAttribute("id", "comment_" + data._id);
     element.style.borderLeft = "3px solid rgba(0, 0, 0, .1)";
     element.style.paddingLeft = "0.7em";
     element.style.marginLeft = indentation + "em";
     element.style.overflow = "auto";
     if(indentation === 0) element.style.marginBottom = "1em";
-    else element.style.marginTop = "0.7em";
+    else element.style.marginTop = "1em";
 
     //owner
     var owner = document.createElement("div");
@@ -154,7 +159,9 @@ function addCommentToList(data, indentation) {
 
     //comment
     var comment = document.createElement("div");
-    comment.innerHTML = data.content;
+    comment.setAttribute("id", "comment_content_" + data._id);
+    if(!data.deleted) comment.innerHTML = data.content;
+    else comment.innerHTML = "<span style='color: rgb(73, 164, 233);'>[COMMENT DELETED BY USER]</span>";
     element.appendChild(comment);
 
     //toolBox
@@ -219,16 +226,18 @@ function addCommentToList(data, indentation) {
     }
 
     //display reply button
-    var replyButton = document.createElement("button");
-    replyButton.innerHTML = "reply";
-    replyButton.style.float = "right";
-    replyButton.style.height = "2em";
-    replyButton.style.fontSize = "11px";
-    replyButton.style.lineHeight = "5px";
-    replyButton.style.border = "transparent";
-    replyButton.setAttribute("id", "display_reply_button_" + data._id);
-    replyButton.setAttribute("onclick", "displayReply('" + data._id + "')");
-    toolBox.appendChild(replyButton);
+    if(depth < 10) {
+        var replyButton = document.createElement("button");
+        replyButton.innerHTML = "reply";
+        replyButton.style.float = "right";
+        replyButton.style.height = "2em";
+        replyButton.style.fontSize = "11px";
+        replyButton.style.lineHeight = "5px";
+        replyButton.style.border = "transparent";
+        replyButton.setAttribute("id", "display_reply_button_" + data._id);
+        replyButton.setAttribute("onclick", "displayReply('" + data._id + "')");
+        toolBox.appendChild(replyButton);
+    }
 
     //reply box
     var replyBox = document.createElement("div");
@@ -263,7 +272,7 @@ function addCommentToList(data, indentation) {
 
     //submit reply button
     var submitReplyButton = document.createElement("button");
-    submitReplyButton.innerHTML = "reply";
+    submitReplyButton.innerHTML = "submit";
     submitReplyButton.style.float = "right";
     submitReplyButton.style.height = "2em";
     submitReplyButton.style.fontSize = "11px";
@@ -284,9 +293,7 @@ function addCommentToList(data, indentation) {
     .then(children => {
         if(children.length) {
             for(const comment of children) {
-                if(!comment.deleted) {
-                    childrenBox.appendChild(addCommentToList(comment, 0.5));
-                }
+                childrenBox.appendChild(addCommentToList(comment, 0.5, depth + 1));
             };
         }
     });
@@ -346,22 +353,30 @@ function deletePostOrComment(target) {
         headers: {
             "Content-Type": "application/json"
         },
-    }).then((res) => console.log(res));
+    }).then((res) => {
+        if(target !== "post") {
+            document.getElementById("comment_content_" + target).innerHTML = "<span style='color: rgb(73, 164, 233);'>[COMMENT DELETED BY USER]</span>"
+        }
+    });
 }
 
 function displayReply(target) {
-    button = "display_reply_button_" + target;
-    target = "reply_box_" + target;
+    const button = "display_reply_button_" + target;
+    const replybox = "reply_box_" + target;
+    const replyTextarea = "reply_textarea_" + target; 
 
     console.log(target);
-    if(document.getElementById(target).style.display === "none") {
+    if(document.getElementById(replybox).style.display === "none") {
+        if(openedReplybox) displayReply(openedReplybox);
         document.getElementById(button).innerHTML = "close";
-        //document.getElementById(button).style.backgroundColor = "Red";
-        document.getElementById(target).style.display = "block";
+        document.getElementById(replybox).style.display = "block";
+        document.getElementById(replyTextarea).focus();
+        openedReplybox = target;
     }
     else {
         document.getElementById(button).innerHTML = "reply";
-        document.getElementById(target).style.display = "none";
+        document.getElementById(replybox).style.display = "none";
+        openedReplybox = "";
     }
 }
 
@@ -386,18 +401,18 @@ function replyComment(target) {
         document.getElementById("reply_textarea_" + target).value = ""
         displayReply(target); //closing the reply textarea
         console.log(res);
-        const element = addCommentToList(res, 0.5);
+        const element = addCommentToList(res, 0.5, parseInt(document.getElementById("comment_" + target).dataset.depth) + 1);
+        console.log(document.getElementById("comment_" + target).dataset.depth);
         document.getElementById("children_box_" + target).appendChild(element);
         element.scrollIntoView(
             {
                 behavior: "smooth",
-                block: "start",
-                inline: "nearest"
+                block: "center",
+                inline: "center"
             }
         );
     })
 }
-
 
 //getting all the data for the page
 //getting post data
@@ -449,9 +464,7 @@ if(params.has("postid")) {
                     if(data.length) {
                         document.getElementById("comments").innerHTML="";
                         for(const comment of data) {
-                            if(!comment.deleted) {
-                                document.getElementById("comments").appendChild(addCommentToList(comment, 0));
-                            }
+                            document.getElementById("comments").appendChild(addCommentToList(comment, 0));
                         };
                     }
                 });
