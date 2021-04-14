@@ -90,7 +90,19 @@ function AddPost(data) { // data is an object
 	var post=document.createElement("div");
 	var p=document.createElement("p");
 	var obj=document.createElement("div");
-	p.innerHTML=data.upvotes-data.downvotes;
+	if(data.votes === 0) colorValue = "grey";
+	else if(data.votes < 0) colorValue = "rgb(255, 65, 65)";
+	else colorValue = "rgb(34, 160, 255)";
+	var voteCount;
+	if(Math.abs(data.votes) > 1000) {
+		voteCount = (Math.floor(data.votes / 100) / 10).toString() + "k";
+		
+	}
+	else voteCount = data.votes.toString();
+	p.innerHTML = "<span style='color: " + colorValue + ";'>" + voteCount + "</span>";
+	p.style.width = "2em";
+	p.style.textAlign = "right";
+	p.style.marginRight = "0.5em";
 	p.style.fontSize="200%";
 	post.appendChild(p);
 	p=document.createElement("p");
