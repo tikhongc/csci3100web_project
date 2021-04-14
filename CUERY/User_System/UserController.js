@@ -125,7 +125,6 @@ User.post('/logout',authentication, async(req,res)=>{
 //User recovery
 const { check  } = require('express-validator');
 const validator = require('./method/validator');
-
 //forgot password request
 User.post("/forgot", [
     check('email').isEmail().withMessage('Enter a valid email address'),
