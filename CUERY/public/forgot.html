@@ -61,7 +61,10 @@
               body:JSON.stringify(data)
              };
 			fetch("/forgot",options)
-			.then(res=>res.json())
+			.then(res=>{
+        res.json();
+        alert('Account activation email has been sent,please check your mailbox!');
+      })
 			.catch(err=>console.log(err));
    }
 </script>
