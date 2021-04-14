@@ -131,7 +131,10 @@ fetch('/checkCookie', options).then(res=>res.json())
         
 function toTitleCase(str) {
 	var arr=str.split(" "),i=0;
-	for(const word of arr)arr[i++]=word[0].toUpperCase()+word.slice(1,word.length);
+	for(const word of arr) {
+		if(word !== "and") arr[i++]=word[0].toUpperCase()+word.slice(1,word.length);
+		else arr[i++]=word;
+	}
 	return arr.join(" ");
 }
 
@@ -193,7 +196,7 @@ function AddPost(data) { // data is an object
 	obj.classList.add("text-secondary");
 	//parsing date
 	const date = new Date(data.createdAt);
-	var dateString = date.getDay() + "/" + date.getMonth() + "/" + date.getFullYear();
+	var dateString = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
 
 	//adding category tag
 	category = document.createElement("div");
@@ -211,14 +214,8 @@ function AddPost(data) { // data is an object
 	topic.style.marginRight = "0.5em";
 	obj.appendChild(topic);
 
+	//owner
 	obj.insertAdjacentHTML("beforeend", "by " + data.owner + " on " + dateString);
-
-	//"<div class='tag' id='category_" + data._id + "'>category</div> <div class='tag' id='topic_" + data._id + "'>topic</div> 
-
-	//parsing tags
-	//console.log(data._id);
-	//console.log(document.getElementById("category_" + data._id));// = "data.category";
-	//document.getElementById("topic_" + data._id).innerHTML = data.topic;
 
 	obj.style.fontSize = "10px";
 	p.appendChild(obj);

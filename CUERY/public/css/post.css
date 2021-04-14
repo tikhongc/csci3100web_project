@@ -1,6 +1,11 @@
 /* for newpost.html, viewpost.html and main.html */
 body {line-height: 200%; background-color: #ede4f0; overflow-x: hidden;
-    font-family: 'Ubuntu', sans-serif;}
+    font-family: 'Ubuntu', sans-serif;
+    background-image: url("../img/background.png");
+    background-repeat: no-repeat;
+    background-position: right 100px;
+    background-size: 400px 350px; 
+}
 div {height: 100%; margin: 0 auto;} /* margin: 0 auto is for centering */
 p {display: inline-block; margin: 0.2em;}
 a,input,select {line-height: 100%; margin-left: 0.5em;}
@@ -130,13 +135,15 @@ button:active {background-color: #88f;}
 }
 
 #contentbox {
-	border: 0.25em solid #adf;
+	background-color:white;
+	border: 0.25em solid #000;
 	border-radius: 0.5em;
 	margin: 0 auto;
     margin-bottom: 1em;
 	width: 700px;
 	padding: 0.5em;
 	overflow: auto;
+    box-shadow: 0px 11px 35px 2px rgba(0, 0, 0, 0.14);
 }
 #content {
 	margin-left: 3em;
@@ -192,9 +199,9 @@ button:active {background-color: #88f;}
 	margin: 0;
 	padding: 0.5em;
 	line-height: 1.5em;
-	background-color: rgb(196, 229, 252);
+	background-color: rgb(255 255 255);
 	resize: none;
-	border: transparent;
+	border: 0.10em solid #a4d3f1;
 	border-radius: 5px;
 }
 #comments {
