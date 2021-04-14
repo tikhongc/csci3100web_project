@@ -1,8 +1,9 @@
 //file for sending email to user
 //using send grid to send email //https://app.sendgrid.com/guide
+const sgMail = require('@sendgrid/mail')
 
-const Mail = require('@sendgrid/mail');
-Mail.setApiKey(process.env.APIkey);
+//sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+
 
 // types of email 
 
@@ -11,7 +12,7 @@ Mail.setApiKey(process.env.APIkey);
 //notification email ?
 
 const WelcomeEmail = (email, name) => {
-    Mail.send({
+  sgMail.send({
         to: email,
         from: 'chiutikhong@yandex.com',
         subject: 'Thanks for joining in Cuery community!',
@@ -26,7 +27,7 @@ const WelcomeEmail = (email, name) => {
 }
 
 const RecoveryEmail = (email,name,link) => {
-    Mail.send({
+  sgMail.send({
         to: email,
         from: 'chiutikhong@yandex.com',
         subject: 'Account Activation Link',
@@ -42,7 +43,7 @@ const RecoveryEmail = (email,name,link) => {
 }
 
 const ConfirmationEmail = (email,name) => {
-  Mail.send({
+  sgMail.send({
       to: email,
       from: 'chiutikhong@yandex.com',
       subject: "Your password has been changed",
