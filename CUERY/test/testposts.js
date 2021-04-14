@@ -13,10 +13,10 @@ for(let i=0;i<cl;++i)for(let j=0;j<tl;++j){
         content: "test content"+i+j,
         topic:topicList[j],
         category:categoryList[i]
-    });    try {
-        await newPost.save();
-        res.status(201).send(newPost);
+    });
+  try {
+      newPost.save();
     } catch(error) {
-        res.status(400).send(error);
+        throw(error);
     }
 }
