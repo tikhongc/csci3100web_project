@@ -136,7 +136,6 @@ button:active {background-color: #88f;}
 
 #contentbox {
 	background-color:white;
-	border: 0.25em solid #000;
 	border-radius: 0.5em;
 	margin: 0 auto;
     margin-bottom: 1em;
@@ -170,7 +169,7 @@ button:active {background-color: #88f;}
 }
 .tag {
     display: inline;
-    background-color: rgb(46, 46, 46);
+    background: linear-gradient(to left, rgb(185, 0, 185), rgb(106, 65, 255));
     border-radius: 0.5em;
     color: white;
     font-size: 10px;
