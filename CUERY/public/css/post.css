@@ -81,10 +81,12 @@ button:active {background-color: #88f;}
 /* for main.html */
 #posts {background-color: #cef; padding: 0.2em 0;}
 #posts>div {background-color: #adf; line-height: 100%; margin: 0.3em 0.5em; cursor: pointer;}
+#pages>p {display: inline; cursor: pointer;}
 
 /* for newpost.html */
 #newcontent {line-height: 100%; height: 70vh; width: calc(100vw - 2em);background-color: #cef; resize: none;}
 
+/* for viewpost.html */
 .vote_button {
 	background-repeat: no-repeat;
 	background-position: center;
