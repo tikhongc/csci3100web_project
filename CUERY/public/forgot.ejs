@@ -35,7 +35,7 @@
                            </div>
                          </div>
                          <div>
-                           <button name="recover-submit" class="btn btn-lg btn-primary btn-block" type="button" onclick="Passwordforget();">Reset Password</button>
+                          <button name="recover-submit" class="btn btn-lg btn-primary btn-block" type="submit" value="reset password">Reset Password</button>
                         </div>
                          <input type="hidden" class="hide" name="token" id="token" value=""> 
                        </form>
@@ -46,27 +46,5 @@
              </div>
       </div>
    </div>
-<script>
-   function Passwordforget() {
-			var data = {
-            email:document.getElementById("email").value
-         };
-         console.log(data);
-           const options = {
-             method: 'POST',
-             headers: 
-			     {
-                 'Content-Type': 'application/json'
-              },
-              body:JSON.stringify(data)
-             };
-			fetch("/forgot",options)
-			.then(res=>{
-        res.json();
-        alert('Account activation email has been sent,please check your mailbox!');
-      })
-			.catch(err=>console.log(err));
-   }
-</script>
 </body>   
 </html>
