@@ -317,7 +317,7 @@ function toggleSidebar(){
 
 function CreatePost() {
 	var data = {
-		title:document.getElementById("title").value,
+		title:document.getElementById("newtitle").value,
 		category:document.getElementById("category").value,
 		topic:document.getElementById("topic").value,
 		content:document.getElementById("newcontent").value
@@ -331,10 +331,10 @@ function CreatePost() {
             body:JSON.stringify(data)
         };
 	fetch("/posts",options)
-	//.then(res=>res.json())
+	.then(res=>res.json())
 	.then(res=>{
 		alert('Post creation success !');
-		window.location.href = "main.html";
+		window.location.href = "http://localhost:3000/viewpost.html?postid=" + res._id;
 	})
 	.catch(err=>console.log(err));
 }
